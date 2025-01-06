@@ -40,3 +40,33 @@ def get_user_settings(func):
 
         return func(*args, **kwargs)
     return wrapper
+def get_machines(func):
+    def wrapper(*args, **kwargs):
+        type = request.args.get("type")
+        if not type:
+            return {"status": "error", "message": "Missing machine type in request"}, 400
+        # Make sure the enter a type that actually exists
+
+        try:
+            # Query supabase for machines
+            response = supabase.table("machines").select("*").eq("type", type).execute()
+            data = response.data
+
+            # Format the results
+            formatted_results = {
+                "status": "success",
+                "data": [
+                    {
+                        "id": item.get("id"),
+                        "name": item.get("name"),
+                        "type": item.get("type"),
+                        "brand": item.get("brand")
+                    }
+                    for item in data
+                ],
+            }
+            request.middleware_data = formatted_results
+        except Exception as e:
+            request.middleware_data = {"status": "error", "message": str(e)}
+        return func(*args, **kwargs)
+    return wrapper

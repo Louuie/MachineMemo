@@ -25,9 +25,15 @@ class MachineAPI {
     }
     
     func addMachine(machine: Machine) async throws -> AddMachine {
-        guard let url = URL(string: "http://192.168.1.5:5001/machines?name=\(machine.name)&type=User&brand=\(machine.brand)") else {
+        guard let userId = supabase.auth.currentSession?.user.id else {
+            throw URLError(.badServerResponse) // Handle case where user is not logged in
+        }
+        print("\(userId)")
+
+        guard let url = URL(string: "http://192.168.1.5:5001/machines?name=\(machine.name)&type=User&brand=\(machine.brand)&user_id=\(userId)") else {
             throw URLError(.badURL)
         }
+
         
         // Encode the JSON Data
         let jsonData = try JSONEncoder().encode(machine)

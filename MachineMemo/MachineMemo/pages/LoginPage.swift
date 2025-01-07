@@ -8,11 +8,47 @@
 import SwiftUI
 
 struct LoginPage: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
+    @State private var errorMessage: String = ""
+    @State private var navScreen: Bool = false
+    @State private var isLoading: Bool = false
 
-#Preview {
-    LoginPage()
+    var body: some View {
+        NavigationStack {
+            VStack {
+                Button(action: {
+                    signInWithGoogle()
+                    if errorMessage.isEmpty && !isLoading {
+                        navScreen = true
+                    }
+                }) {
+                    Text("Sign in with Google")
+                }
+
+                if !errorMessage.isEmpty {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .font(.caption)
+                }
+            }
+            .navigationDestination(isPresented: $navScreen) {
+                MachinePage()
+            }
+            .padding()
+        }
+    }
+
+    private func signInWithGoogle() {
+        Task {
+            do {
+                isLoading = true
+                try await supabase.auth.signInWithOAuth(
+                    provider: .google,
+                    redirectTo: URL(string: "io.supabase.user-management://login-callback")
+                )
+                isLoading = false
+            } catch {
+                errorMessage = "Failed to log in: \(error.localizedDescription)"
+            }
+        }
+    }
 }

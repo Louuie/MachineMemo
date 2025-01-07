@@ -11,7 +11,7 @@ struct Tabs: View {
     var body: some View {
         TabView {
             Tab("Home", systemImage: "house") {
-                Text("Home Page")
+                LoginPage()
             }
             Tab("Machines", systemImage: "figure.strengthtraining.traditional") {
                 MachinePage()

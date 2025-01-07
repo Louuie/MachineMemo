@@ -78,6 +78,7 @@ def add_machines(func):
         name = request.args.get("name")
         machine_type = request.args.get("type")
         brand = request.args.get("brand")
+        user_id = request.args.get("user_id")
         # TODO: Add Error handlers for the query parameters 
         if not name:
             return {"status": "error", "message": "Missing machine name in request"}, 400
@@ -86,7 +87,7 @@ def add_machines(func):
         if not brand:
             return {"status": "error", "message": "Missing machine brand in request"}, 400
         try:
-            data = supabase.table("machines").insert({"name": name, "type": machine_type, "brand": brand}).execute()
+            data = supabase.table("machines").insert({"name": name, "type": machine_type, "brand": brand, "user_id": user_id}).execute()
             assert len(data.data) > 0
             request.middleware_data = {"status": "success", "message": "successfully added machine to db"}
         except Exception as e:

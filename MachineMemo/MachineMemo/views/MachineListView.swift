@@ -32,7 +32,6 @@ struct MachineListView: View {
                                     .font(.subheadline)
                                     .foregroundColor(.secondary)
                             }
-                            
                         }
                     }
                 }

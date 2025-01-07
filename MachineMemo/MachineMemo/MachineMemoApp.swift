@@ -11,7 +11,7 @@ import SwiftUI
 struct MachineMemoApp: App {
     var body: some Scene {
         WindowGroup {
-            Tabs()
+            AppView()
         }
     }
 }

@@ -1,3 +1,11 @@
+//
+//  AppView.swift
+//  MachineMemo
+//
+//  Created by Eric Hurtado on 1/6/25.
+//
+
+import Foundation
 import SwiftUI
 
 struct AppView: View {
@@ -6,7 +14,7 @@ struct AppView: View {
   var body: some View {
     Group {
       if isAuthenticated {
-        ProfileView()
+        Tabs()
       } else {
         AuthView()
       }

@@ -1,3 +1,12 @@
+//
+//  Profile.swift
+//  MachineMemo
+//
+//  Created by Eric Hurtado on 1/6/25.
+//
+
+import Foundation
+
 struct Profile: Decodable {
   let username: String?
   let fullName: String?

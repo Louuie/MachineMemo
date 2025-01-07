@@ -1,4 +1,13 @@
+//
+//  ProfileView.swift
+//  MachineMemo
+//
+//  Created by Eric Hurtado on 1/6/25.
+//
+
+import Foundation
 import SwiftUI
+import Supabase
 
 struct ProfileView: View {
   @State var username = ""

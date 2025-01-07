@@ -18,6 +18,7 @@ struct Tabs: View {
             }
             Tab("Profile", systemImage: "person") {
                 Text("Profile Page")
+                ProfileView()
             }
         }
     }

@@ -46,13 +46,13 @@ def get_machines(func):
         if not machine_type:
             return {"status": "error", "message": "Missing machine type in request"}, 400
         # Make sure the enter a type that actually exists
-        if machine_type != "Official" or "User":
-            return {"status": "error", "message": "machine_type needs to be Official or User"}, 400
+        # if machine_type != "Official" or "User":
+        #     return {"status": "error", "message": "machine_type needs to be Official or User"}, 400
 
 
         try:
             # Query supabase for machines
-            response = supabase.table("machines").select("*").eq("type", type).execute()
+            response = supabase.table("machines").select("*").eq("type", machine_type).execute()
             data = response.data
 
             # Format the results
@@ -61,6 +61,7 @@ def get_machines(func):
                 "data": [
                     {
                         "id": item.get("id"),
+                        "user_id": item.get("user_id"),
                         "name": item.get("name"),
                         "type": item.get("type"),
                         "brand": item.get("brand")

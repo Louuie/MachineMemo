@@ -61,7 +61,6 @@ def get_machines(func):
                 "data": [
                     {
                         "id": item.get("id"),
-                        "user_id": item.get("user_id"),
                         "name": item.get("name"),
                         "type": item.get("type"),
                         "brand": item.get("brand")

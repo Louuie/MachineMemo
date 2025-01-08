@@ -16,12 +16,23 @@ struct LoginPage: View {
         NavigationStack {
             VStack {
                 Button(action: {
-                    signInWithGoogle()
-                    if errorMessage.isEmpty && !isLoading {
+                    isLoading = true
+                    
+                    // Call `loginWithGoogle`
+                    MachineAPI.shared.loginWithGoogle()
+                    
+                    // Simulate success
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        isLoading = false
+                        // Assume navigation on success
                         navScreen = true
                     }
                 }) {
-                    Text("Sign in with Google")
+                    if isLoading {
+                        ProgressView()
+                    } else {
+                        Text("Sign in with Google")
+                    }
                 }
 
                 if !errorMessage.isEmpty {
@@ -31,24 +42,13 @@ struct LoginPage: View {
                 }
             }
             .navigationDestination(isPresented: $navScreen) {
-                MachinePage()
+                Tabs()
             }
             .padding()
         }
     }
+}
 
-    private func signInWithGoogle() {
-        Task {
-            do {
-                isLoading = true
-                try await supabase.auth.signInWithOAuth(
-                    provider: .google,
-                    redirectTo: URL(string: "io.supabase.user-management://login-callback")
-                )
-                isLoading = false
-            } catch {
-                errorMessage = "Failed to log in: \(error.localizedDescription)"
-            }
-        }
-    }
+#Preview {
+    LoginPage()
 }

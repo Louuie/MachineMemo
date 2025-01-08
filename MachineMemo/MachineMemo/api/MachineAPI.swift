@@ -5,6 +5,7 @@
 //  Created by Elias Dandouch on 1/5/25.
 //
 import Foundation
+import SafariServices
 
 class MachineAPI {
     static let shared = MachineAPI()
@@ -25,16 +26,10 @@ class MachineAPI {
     }
     
     func addMachine(machine: Machine) async throws -> AddMachine {
-        guard let userId = supabase.auth.currentSession?.user.id else {
-            throw URLError(.badServerResponse) // Handle case where user is not logged in
-        }
-        print("\(userId)")
-
-        guard let url = URL(string: "http://192.168.1.5:5001/machines?name=\(machine.name)&type=User&brand=\(machine.brand)&user_id=\(userId)") else {
+        guard let url = URL(string: "http://192.168.1.5:5001/machines?name=\(machine.name)&type=User&brand=\(machine.brand)") else {
             throw URLError(.badURL)
         }
 
-        
         // Encode the JSON Data
         let jsonData = try JSONEncoder().encode(machine)
         
@@ -54,5 +49,17 @@ class MachineAPI {
         let response = try JSONDecoder().decode(AddMachine.self, from: data)
         return response
     }
+
+    func loginWithGoogle() {
+        guard let url = URL(string: "http://localhost:5001/google/login") else { return }
+        
+        let safariVC =  SFSafariViewController(url: url)
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let rootVC = windowScene.windows.first?.rootViewController {
+            rootVC.present(safariVC, animated: true, completion: nil)
+            //rootVC.dismiss(animated: true)
+        }
+    }
+
 }
 

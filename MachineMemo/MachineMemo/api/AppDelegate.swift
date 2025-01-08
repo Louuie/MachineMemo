@@ -6,17 +6,21 @@
 //
 
 import UIKit
-import Supabase
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    func application(
-        _ app: UIApplication,
-        open url: URL,
-        options: [UIApplication.OpenURLOptionsKey : Any] = [:]
-    ) -> Bool {
-        // Pass the URL to the Supabase Auth client for processing
-        supabase.auth.handle(url)
-        return true
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        // Check if the URL matches your scheme and path
+        if url.scheme == "myapp" || url.host == "callback" {
+            let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems
+
+            // Extract the token from the query parameters
+            if let token = queryItems?.first(where: { $0.name == "token" })?.value {
+                print("Access token: \(token)")
+                // Handle the token (e.g., save it, make API requests, or update the UI)
+            }
+            return true
+        }
+        return false
     }
 }
 

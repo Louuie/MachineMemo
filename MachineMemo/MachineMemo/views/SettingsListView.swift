@@ -27,7 +27,6 @@ struct SettingsListView: View {
                 else {
                     List(settings) { setting in
                         VStack(alignment: .leading) {
-                            Text("Settings:")
                             ForEach(setting.settings.keys.sorted(), id: \.self) { key in
                                 Text("\(key): \(setting.settings[key] ?? "")")
                             }

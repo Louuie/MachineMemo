@@ -66,16 +66,26 @@ class MachineAPI {
         let response = try JSONDecoder().decode(AddSetting.self, from: data)
         return response
     }
-    func getSettings() async throws -> [Setting] {
-        guard let url = URL(string: "http://3.101.59.11:5001/settings") else {
+    func getSettings(machineID: String) async throws -> [Setting] {
+        guard let url = URL(string: "http://3.101.59.11:5001/settings?machine_id=\(machineID)") else {
             throw URLError(.badURL)
         }
         let (data, _) = try await URLSession.shared.data(from: url)
-        // Print the raw response for debugging
-        print(String(data: data, encoding: .utf8) ?? "Invalid Data")
-        let response = try JSONDecoder().decode(SettingResponse.self, from: data)
-        return response.data
+        
+        // Debugging: Print raw JSON data
+        print("Raw Response:", String(data: data, encoding: .utf8) ?? "Invalid Data")
+        
+        // Decode the JSON response
+        do {
+            let response = try JSONDecoder().decode(SettingResponse.self, from: data)
+            print("Decoded Response:", response)
+            return response.data
+        } catch {
+            print("Decoding Error:", error.localizedDescription)
+            throw error
+        }
     }
+
 
     func loginWithGoogle() {
         guard let url = URL(string: "http://3.101.59.11:5001/google/login") else { return }

@@ -71,7 +71,7 @@ struct AddMachineSettingPage: View {
             }
 
             // Create the Setting object with the converted Int
-            let newSetting = Setting(id: nil, machine_id: machineIDAsInt, settings: settings)
+            let newSetting = Setting(id: nil, machine_id: machineIDAsInt, settings: settings, user_id: nil)
             
             // Send the request using the API
             let addSettingResponse = try await MachineAPI.shared.addSetting(setting: newSetting)

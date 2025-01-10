@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct SettingsListView: View {
-    @State private var isLoading: Bool = false
+    @State var machine_id: String
+    @State private var isLoading: Bool = true
     @State private var settings: [Setting] = [] // Array of `Setting` objects
     @State private var errorMessage: String? = ""
 
@@ -17,7 +18,7 @@ struct SettingsListView: View {
             VStack {
                 if isLoading {
                     ProgressView("Loading Settings...")
-                } else if let errorMessage = errorMessage {
+                } else if let errorMessage = errorMessage, !errorMessage.isEmpty {
                     Text("Error: \(errorMessage)")
                         .foregroundColor(.red)
                         .multilineTextAlignment(.center)
@@ -26,9 +27,14 @@ struct SettingsListView: View {
                 else {
                     List(settings) { setting in
                         VStack(alignment: .leading) {
-                            Text("\(setting.machine_id)")
+                            Text("Settings:")
+                            ForEach(setting.settings.keys.sorted(), id: \.self) { key in
+                                Text("\(key): \(setting.settings[key] ?? "")")
+                            }
                         }
+                        .padding()
                     }
+
                     
                 }
             }
@@ -42,7 +48,7 @@ struct SettingsListView: View {
         isLoading = true
         do {
             // Fetch settings from your API
-            settings = try await MachineAPI.shared.getSettings() // Assume this returns `SettingResponse`
+            settings = try await MachineAPI.shared.getSettings(machineID: machine_id) // Assume this returns `SettingResponse`
             isLoading = false
         } catch {
             errorMessage = error.localizedDescription

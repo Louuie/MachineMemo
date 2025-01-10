@@ -11,13 +11,14 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY, options=ClientOptions(flow_
 def get_user_settings(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
+        machine_id = request.args.get("machine_id")
         # user_session = session.get('user_session')
         # if not user_session:
         #     return {"status": "error", "message": "Missing user_session in request"}, 400
 
         try:
             # Query Supabase for settings
-            response = supabase.table("settings").select("*").execute()
+            response = supabase.table("settings").select("*").eq("machine_id").execute()
             data = response.data  # Extract data
 
             # Format the data

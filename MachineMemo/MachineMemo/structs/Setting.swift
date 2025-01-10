@@ -6,9 +6,10 @@
 //
 
 struct Setting: Identifiable, Codable {
-    let id: String?
+    let id: Int?
     let machine_id: Int
     let settings: [String: String]
+    let user_id: String?
 }
 
 struct AddSetting: Codable {

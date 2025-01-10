@@ -11,7 +11,7 @@ class MachineAPI {
     static let shared = MachineAPI()
 
     func fetchMachines() async throws -> [Machine] {
-        guard let url = URL(string: "http://192.168.1.5:5001/machines?type=User") else {
+        guard let url = URL(string: "http://3.101.59.11:5001/machines?type=User") else {
             throw URLError(.badURL)
         }
 
@@ -26,7 +26,7 @@ class MachineAPI {
     }
     
     func addMachine(machine: Machine) async throws -> AddMachine {
-        guard let url = URL(string: "http://192.168.1.5:5001/machines?name=\(machine.name)&type=User&brand=\(machine.brand)") else {
+        guard let url = URL(string: "http://3.101.59.11:5001/machines?name=\(machine.name)&type=User&brand=\(machine.brand)") else {
             throw URLError(.badURL)
         }
 
@@ -51,7 +51,7 @@ class MachineAPI {
     }
     
     func addSetting(setting: Setting) async throws -> AddSetting {
-        guard let url = URL(string: "http://192.168.1.5:5001/settings?machine_id=\(setting.machine_id)") else {
+        guard let url = URL(string: "http://3.101.59.11:5001/settings?machine_id=\(setting.machine_id)") else {
             throw URLError(.badURL)
         }
         
@@ -68,7 +68,7 @@ class MachineAPI {
     }
 
     func loginWithGoogle() {
-        guard let url = URL(string: "http://192.168.1.5:5001/google/login") else { return }
+        guard let url = URL(string: "http://3.101.59.11:5001/google/login") else { return }
         
         let safariVC =  SFSafariViewController(url: url)
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,

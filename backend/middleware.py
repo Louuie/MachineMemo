@@ -133,7 +133,7 @@ def login_with_google(func):
                 {
                     "provider": "google",
                     "options": {
-                        "redirect_to": "http://192.168.1.5:5001/callback" 
+                        "redirect_to": "http://3.101.59.11:5001/callback" 
                     },
                 }
             )
@@ -162,7 +162,7 @@ def callback(func):
             }
             print(session.get('user_session'))
             session.modified = True
-            return redirect("http://192.168.1.5:5001/get_session")
+            return redirect("http://3.101.59.11:5001/get_session")
         except Exception as e:
             request.middleware_data = {"status": "error", "message": str(e)}
             return jsonify(request.middleware_data), 500

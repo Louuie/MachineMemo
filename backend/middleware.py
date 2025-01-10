@@ -28,8 +28,7 @@ def get_user_settings(func):
                         "id": item.get("id"),
                         "user_id": item.get("user_id"),
                         "machine_id": item.get("machine_id"),
-                        "seat_height": item.get("seat_height"),
-                        "other_setting": item.get("other_setting"),
+                        "settings": item.get("settings"),
                     }
                     for item in data
                 ],

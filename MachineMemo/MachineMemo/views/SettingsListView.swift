@@ -10,54 +10,46 @@ import SwiftUI
 struct SettingsListView: View {
     @State private var isLoading: Bool = false
     @State private var settings: [Setting] = [] // Array of `Setting` objects
-    @State private var errorMessage: String = ""
+    @State private var errorMessage: String? = ""
 
     var body: some View {
         NavigationStack {
-            if isLoading {
-                ProgressView("Loading Settings...")
-            } else {
-                List {
-                    ForEach(settings, id: \.machine_id) { setting in
-                        Section(header: Text("Machine ID: \(setting.machine_id)")) {
-                            ForEach(setting.settings.sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
-                                HStack {
-                                    Text(key).bold() // Display the key
-                                    Spacer()
-                                    Text(value) // Display the value
-                                }
-                            }
+            VStack {
+                if isLoading {
+                    ProgressView("Loading Settings...")
+                } else if let errorMessage = errorMessage {
+                    Text("Error: \(errorMessage)")
+                        .foregroundColor(.red)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                }
+                else {
+                    List(settings) { setting in
+                        VStack(alignment: .leading) {
+                            Text("\(setting.machine_id)")
                         }
                     }
-                }
-                .navigationTitle("Settings")
-                .onAppear() {
-                    Task {
-                        await loadSettings()
-                    }
+                    
                 }
             }
-
-            if !errorMessage.isEmpty {
-                Text(errorMessage)
-                    .foregroundColor(.red)
-                    .padding()
+            .navigationTitle("Machines")
+            .task {
+                await loadSettings()
+            }
             }
         }
-    }
-
     private func loadSettings() async {
         isLoading = true
         do {
-            settings = try await MachineAPI.shared.getSettings()
-            print("Fetched Settings: \(settings)") // Debugging
+            // Fetch settings from your API
+            settings = try await MachineAPI.shared.getSettings() // Assume this returns `SettingResponse`
             isLoading = false
         } catch {
             errorMessage = error.localizedDescription
-            print("Error fetching settings: \(error)") // Debugging
             isLoading = false
         }
     }
+    }
 
-}
+
 

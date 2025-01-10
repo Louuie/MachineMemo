@@ -5,8 +5,9 @@
 //  Created by Elias Dandouch on 1/9/25.
 //
 
-struct Setting: Codable {
-    let machine_id: String
+struct Setting: Identifiable, Codable {
+    let id: String?
+    let machine_id: Int
     let settings: [String: String]
 }
 

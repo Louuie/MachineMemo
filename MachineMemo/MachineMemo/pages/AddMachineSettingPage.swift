@@ -51,7 +51,7 @@ struct AddMachineSettingPage: View {
                         let machineSettings = Dictionary(uniqueKeysWithValues: zip(extraMachineSettings, extraSettingVal))
                         print("Machine Settings: \(machineSettings)")
                         print("\(machineID)")
-                        await addSetting(maching_id: machineID, settings: machineSettings)
+                        await addSetting(machine_id: machineID, settings: machineSettings) // Fixed call
                     }
                 }) {
                     Text("Submit Settings")
@@ -61,14 +61,25 @@ struct AddMachineSettingPage: View {
             .navigationTitle("Add Settings")
         }
     }
-    private func addSetting(maching_id: String, settings: [String: String]) async {
+
+    private func addSetting(machine_id: String, settings: [String: String]) async {
         do {
-            let newSetting = Setting(machine_id: maching_id, settings: settings)
+            // Convert machine_id from String to Int
+            guard let machineIDAsInt = Int(machine_id) else {
+                errorMessage = "Invalid machine_id: \(machine_id)"
+                return
+            }
+
+            // Create the Setting object with the converted Int
+            let newSetting = Setting(id: nil, machine_id: machineIDAsInt, settings: settings)
+            
+            // Send the request using the API
             let addSettingResponse = try await MachineAPI.shared.addSetting(setting: newSetting)
             print(addSettingResponse)
-            print(maching_id)
+            print(machine_id)
         } catch {
             errorMessage = "Failed to add the setting: \(error.localizedDescription)"
         }
     }
 }
+

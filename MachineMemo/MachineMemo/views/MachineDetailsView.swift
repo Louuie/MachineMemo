@@ -14,10 +14,12 @@ struct MachineDetailsView: View {
             VStack {
                 Text("\(machine.name)").font(.title)
                 Text("\(machine.brand)").font(.subheadline)
+                SettingsListView()
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             NavigationLink(destination: AddMachineSettingPage(machineID: machine.id != nil ? String(machine.id!) : "")) {
                                 Image(systemName: "plus")
+                                Text("\(machine.id != nil ? String(machine.id!) : "")")
                             }
 
                         }

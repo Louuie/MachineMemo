@@ -50,6 +50,7 @@ struct AddMachineSettingPage: View {
                     Task {
                         let machineSettings = Dictionary(uniqueKeysWithValues: zip(extraMachineSettings, extraSettingVal))
                         print("Machine Settings: \(machineSettings)")
+                        print("\(machineID)")
                         await addSetting(maching_id: machineID, settings: machineSettings)
                     }
                 }) {
@@ -65,6 +66,7 @@ struct AddMachineSettingPage: View {
             let newSetting = Setting(machine_id: maching_id, settings: settings)
             let addSettingResponse = try await MachineAPI.shared.addSetting(setting: newSetting)
             print(addSettingResponse)
+            print(maching_id)
         } catch {
             errorMessage = "Failed to add the setting: \(error.localizedDescription)"
         }

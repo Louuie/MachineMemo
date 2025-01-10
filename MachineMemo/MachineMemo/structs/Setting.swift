@@ -14,3 +14,7 @@ struct AddSetting: Codable {
     let message: String
     let status: String
 }
+struct SettingResponse: Codable {
+    let data: [Setting]
+    let status: String
+}

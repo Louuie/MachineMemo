@@ -11,13 +11,13 @@ supabase = create_client(SUPABASE_URL, SUPABASE_KEY, options=ClientOptions(flow_
 def get_user_settings(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        user_id = request.args.get("user_id")  # Get user_id from request arguments
-        if not user_id:
-            return {"status": "error", "message": "Missing user_id in request"}, 400
+        user_session = session.get('user_session')
+        if not user_session:
+            return {"status": "error", "message": "Missing user_session in request"}, 400
 
         try:
             # Query Supabase for settings
-            response = supabase.table("settings").select("*").eq("user_id", user_id).execute()
+            response = supabase.table("settings").select("*").eq("user_id").execute()
             data = response.data  # Extract data
 
             # Format the data
@@ -123,7 +123,7 @@ def add_machine_settings(func):
             request.middleware_data = {"status": "error", "message": str(e)}
         return func(*args, **kwargs)
     return wrapper
-
+    
 def login_with_google(func):
     @wraps (func)
     def wrapper(*args, **kwargs):

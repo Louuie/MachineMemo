@@ -51,7 +51,7 @@ class MachineAPI {
     }
 
     func loginWithGoogle() {
-        guard let url = URL(string: "http://localhost:5001/google/login") else { return }
+        guard let url = URL(string: "http://192.168.1.5:5001/google/login") else { return }
         
         let safariVC =  SFSafariViewController(url: url)
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,

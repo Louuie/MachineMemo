@@ -10,8 +10,17 @@ import SwiftUI
 struct MachineDetailsView: View {
     let machine: Machine
     var body: some View {
-        Text("\(machine.name)")
-        Text("\(machine.brand)")
-        Text("\(machine.type)")
+        NavigationStack {
+            Text("\(machine.name)")
+            Text("\(machine.brand)")
+            Text("\(machine.type)")
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        NavigationLink(destination: AddMachineSettingPage()) {
+                            Image(systemName: "plus")
+                        }
+                    }
+                }
+        }
     }
 }

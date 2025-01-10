@@ -8,25 +8,27 @@
 import SwiftUI
 
 struct LoginPage: View {
+    @State private var isLoggedIn: Bool = false
     @State private var errorMessage: String = ""
-    @State private var navScreen: Bool = false
     @State private var isLoading: Bool = false
 
     var body: some View {
+        Group {
+            if isLoggedIn {
+                Tabs() // Replace with your Tabs view
+            } else {
+                loginContent
+            }
+        }
+        .animation(.easeInOut, value: isLoggedIn) // Smooth transition
+    }
+
+    private var loginContent: some View {
         NavigationStack {
             VStack {
                 Button(action: {
                     isLoading = true
-                    
-                    // Call `loginWithGoogle`
-                    MachineAPI.shared.loginWithGoogle()
-                    
-                    // Simulate success
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        isLoading = false
-                        // Assume navigation on success
-                        navScreen = true
-                    }
+                    performLogin()
                 }) {
                     if isLoading {
                         ProgressView()
@@ -41,14 +43,16 @@ struct LoginPage: View {
                         .font(.caption)
                 }
             }
-            .navigationDestination(isPresented: $navScreen) {
-                Tabs()
-            }
             .padding()
         }
     }
-}
 
-#Preview {
-    LoginPage()
+    private func performLogin() {
+        MachineAPI.shared.loginWithGoogle()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            // Assume success
+            isLoading = false
+            isLoggedIn = true
+        }
+    }
 }

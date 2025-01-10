@@ -83,6 +83,9 @@ def add_machines(func):
         machine_type = request.args.get("type")
         brand = request.args.get("brand")
         print(session.get('user_session'))
+        user_sess = session.get('user_session')
+        print(user_sess)
+
         if not name:
             return {"status": "error", "message": "Missing machine name in request"}, 400
         if not machine_type:

@@ -28,11 +28,13 @@ def get_user_settings(func):
                         "id": item.get("id"),
                         "user_id": item.get("user_id"),
                         "machine_id": item.get("machine_id"),
-                        "settings": item.get("settings"),
+                        # Flatten the settings structure
+                        "settings": item.get("settings", {}).get("settings", {})
                     }
                     for item in data
                 ],
             }
+
 
             # Attach to request object for downstream use
             request.middleware_data = formatted_results

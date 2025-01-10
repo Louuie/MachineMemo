@@ -49,6 +49,23 @@ class MachineAPI {
         let response = try JSONDecoder().decode(AddMachine.self, from: data)
         return response
     }
+    
+    func addSetting(setting: Setting) async throws -> AddSetting {
+        guard let url = URL(string: "http://192.168.1.5:5001/settings?machine_id=\(setting.machine_id)") else {
+            throw URLError(.badURL)
+        }
+        
+        let jsonData = try JSONEncoder().encode(setting)
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData
+        
+        let (data, _) = try await URLSession.shared.data(for: request)
+        print(String(data: data, encoding: .utf8) ?? "Invalid Data")
+        let response = try JSONDecoder().decode(AddSetting.self, from: data)
+        return response
+    }
 
     func loginWithGoogle() {
         guard let url = URL(string: "http://192.168.1.5:5001/google/login") else { return }

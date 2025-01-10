@@ -13,7 +13,7 @@ struct MachinePage: View {
                 .navigationTitle("Machines")
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        NavigationLink(destination: AddMachineSettingPage()) {
+                        NavigationLink(destination: AddMachinePage()) {
                             Image(systemName: "plus")
                         }
                     }

@@ -11,16 +11,19 @@ struct MachineDetailsView: View {
     let machine: Machine
     var body: some View {
         NavigationStack {
-            Text("\(machine.name)")
-            Text("\(machine.brand)")
-            Text("\(machine.type)")
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        NavigationLink(destination: AddMachineSettingPage()) {
-                            Image(systemName: "plus")
+            VStack {
+                Text("\(machine.name)").font(.title)
+                Text("\(machine.brand)").font(.subheadline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            NavigationLink(destination: AddMachineSettingPage(machineID: machine.id != nil ? String(machine.id!) : "")) {
+                                Image(systemName: "plus")
+                            }
+
                         }
                     }
-                }
+            }.padding(.leading)
+
         }
     }
 }

@@ -104,19 +104,16 @@ def add_machine_settings(func):
     @wraps (func)
     def wrapper(*args, **kwargs):
         machine_id = request.args.get("machine_id")
-        user_session = session.get('user_session')
-        user_id = session.get('user_id')
-        
+        user_session = session.get('user_session')      
         settings = request.get_json()
         # TODO: Add Error handlers for the query parameters 
-        if not user_session or 'access_token' not in user_session:
-            return {"status": "error", "message": "Missing user_id in request, please login"}, 400
+        # if not user_session or 'access_token' not in user_session:
+        #     return {"status": "error", "message": "Missing user_id in request, please login"}, 400
         if not settings:
             return {"status": "error", "message": "Missing settings in request"}, 400
         machine_settings = {
             "machine_id": machine_id,
             "settings": settings,
-            "user_id": user_id
         }
         try:
             data = supabase.table("settings").insert(machine_settings).execute()

@@ -18,7 +18,7 @@ def get_user_settings(func):
 
         try:
             # Query Supabase for settings
-            response = supabase.table("settings").select("*").eq("machine_id").execute()
+            response = supabase.table("settings").select("*").eq("machine_id", machine_id).execute()
             data = response.data  # Extract data
 
             # Format the data

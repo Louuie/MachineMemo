@@ -12,15 +12,15 @@ struct MachineDetailsView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Text("\(machine.name)").font(.title)
-                Text("\(machine.brand)").font(.subheadline)
+                Text("\(machine.brand)").font(.title)
+                Text("\(machine.name)").font(.subheadline)
                 SettingsListView(machine_id: String(machine.id ?? 0))
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
-                            NavigationLink(destination: AddMachineSettingPage(machineID: machine.id != nil ? String(machine.id!) : "")) {
-                                Image(systemName: "plus")
-                                Text("\(machine.id != nil ? String(machine.id!) : "")")
-                            }
+//                            NavigationLink(destination: AddMachineSettingPage(machineID: machine.id != nil ? String(machine.id!) : "")) {
+//                                Image(systemName: "plus")
+//                                Text("\(machine.id != nil ? String(machine.id!) : "")")
+//                            }
 
                         }
                     }

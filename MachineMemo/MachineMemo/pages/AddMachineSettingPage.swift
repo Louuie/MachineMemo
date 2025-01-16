@@ -13,6 +13,8 @@ struct AddMachineSettingPage: View {
     @State var errorMessage: String = ""
     @State var extraMachineSettings = [""]
     @State var extraSettingVal = [""]
+    
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         NavigationStack {
@@ -48,10 +50,7 @@ struct AddMachineSettingPage: View {
                 // Submit Button
                 Button(action: {
                     Task {
-                        let machineSettings = Dictionary(uniqueKeysWithValues: zip(extraMachineSettings, extraSettingVal))
-                        print("Machine Settings: \(machineSettings)")
-                        print("\(machineID)")
-                        await addSetting(machine_id: machineID, settings: machineSettings) // Fixed call
+                        await submitSettings()
                     }
                 }) {
                     Text("Submit Settings")
@@ -59,6 +58,31 @@ struct AddMachineSettingPage: View {
                 .tint(.green)
             }
             .navigationTitle("Add Settings")
+        }
+    }
+    
+    private func submitSettings() async {
+        do {
+            guard validateFields() else {
+                errorMessage = "All fields must be filled out and cannot be empty or whitespace."
+                return
+            }
+            
+            let machineSettings = Dictionary(uniqueKeysWithValues: zip(extraMachineSettings, extraSettingVal))
+            
+            guard let machineIdAsInt = Int(machineID) else {
+                errorMessage = "Invalid machine_id: \(machineID)"
+                return
+            }
+            let newSetting = Setting(id: nil, machine_id: machineIdAsInt, settings: machineSettings, user_id: nil)
+            
+            let addSettingResponse = try await MachineAPI.shared.addSetting(setting: newSetting)
+            
+            print(addSettingResponse)
+            
+            dismiss()
+        } catch {
+            errorMessage = "Failed to add the setting \(error.localizedDescription)"
         }
     }
 
@@ -80,6 +104,13 @@ struct AddMachineSettingPage: View {
         } catch {
             errorMessage = "Failed to add the setting: \(error.localizedDescription)"
         }
+    }
+    
+    private func validateFields() -> Bool {
+        // Ensure no empty or whitespace-only fields
+        let areNamesValid = !extraMachineSettings.contains { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+        let areValuesValid = !extraSettingVal.contains { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+        return areNamesValid && areValuesValid
     }
 }
 

@@ -23,6 +23,18 @@ struct SettingsListView: View {
                         .foregroundColor(.red)
                         .multilineTextAlignment(.center)
                         .padding()
+                } else if settings.isEmpty {
+                    VStack {
+                        Text("You have yet to add settings for this machine.")
+                            .foregroundColor(.gray)
+                        NavigationLink(destination: AddMachineSettingPage(machineID: machine_id)) {
+                            Text("Add Settings")
+                                .padding()
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(8)
+                        } .fixedSize()
+                    }
                 }
                 else {
                     List(settings) { setting in
@@ -32,6 +44,13 @@ struct SettingsListView: View {
                             }
                         }
                         .padding()
+                        .swipeActions(edge: .trailing) {
+                            Button {
+                                // some new view in here to edit setting ex: EditSettingSheet(setting: setting)
+                            } label: {
+                                Label("Edit", systemImage: "pencil")
+                            }
+                        }
                     }
 
                     
@@ -54,6 +73,7 @@ struct SettingsListView: View {
             isLoading = false
         }
     }
+    
     }
 
 

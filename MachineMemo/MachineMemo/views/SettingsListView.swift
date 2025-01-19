@@ -56,7 +56,6 @@ struct SettingsListView: View {
                     
                 }
             }
-            .navigationTitle("Machines")
             .task {
                 await loadSettings()
             }

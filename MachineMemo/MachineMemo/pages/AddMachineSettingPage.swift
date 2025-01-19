@@ -13,6 +13,7 @@ struct AddMachineSettingPage: View {
     @State var errorMessage: String = ""
     @State var extraMachineSettings = [""]
     @State var extraSettingVal = [""]
+    @State private var showToast: Bool = false
     
     @Environment(\.dismiss) var dismiss
 
@@ -56,6 +57,7 @@ struct AddMachineSettingPage: View {
                     Text("Submit Settings")
                 }
                 .tint(.green)
+                .disabled(!canSubmit())
             }
             .navigationTitle("Add Settings")
         }
@@ -107,10 +109,28 @@ struct AddMachineSettingPage: View {
     }
     
     private func validateFields() -> Bool {
-        // Ensure no empty or whitespace-only fields
-        let areNamesValid = !extraMachineSettings.contains { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
-        let areValuesValid = !extraSettingVal.contains { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
-        return areNamesValid && areValuesValid
+        // Ensure no empty or whitespace-only fields and at least one setting exists
+        guard !extraMachineSettings.isEmpty,
+              !extraSettingVal.isEmpty,
+              !extraMachineSettings.contains(where: { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }),
+              !extraSettingVal.contains(where: { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) else {
+            return false
+        }
+        return true
+    }
+
+    private func canSubmit() -> Bool {
+        // Validate that at least one setting exists and all fields are valid
+        return !extraMachineSettings.isEmpty &&
+               !extraSettingVal.isEmpty &&
+               validateFields()
+    }
+
+    private func showError(_ message: String) {
+        errorMessage = message
+        withAnimation {
+            showToast = true
+        }
     }
 }
 

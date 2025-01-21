@@ -135,7 +135,7 @@ def login_with_google(func):
                 {
                     "provider": "google",
                     "options": {
-                        "redirect_to": "http://192.168.1.47/callback" 
+                        "redirect_to": "http://192.168.1.47:5001/callback" 
                     },
                 }
             )

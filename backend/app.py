@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS
-from middleware import get_user_settings, get_machines, add_machines, add_machine_settings, login_with_google, callback, get_session
+from middleware import get_user_settings, get_machines, add_machines, add_machine_settings, login_with_google, callback, get_session, update_setting
 from datetime import timedelta
 import os
 
@@ -21,7 +21,7 @@ def create_app():
          resources={
              r"/*": {
                  "origins": "*",
-                 "methods": ["GET", "POST", "OPTIONS"],
+                 "methods": ["GET", "POST", "PUT", "OPTIONS"],
                  "allow_headers": ["Content-Type", "Authorization"]
              }
          })
@@ -38,6 +38,12 @@ def create_app():
     @app.route("/settings", methods=['POST'], endpoint='add_settings_middleware_endpoint')
     @add_machine_settings
     def add_settings():
+        middleware_data = request.middleware_data
+        return jsonify(middleware_data), 200 if middleware_data["status"] == "success" else 500
+    
+    @app.route("/edit", methods=['PUT'], endpoint='update_settings_middleware_endpoint')
+    @update_setting
+    def update_settings():
         middleware_data = request.middleware_data
         return jsonify(middleware_data), 200 if middleware_data["status"] == "success" else 500
     

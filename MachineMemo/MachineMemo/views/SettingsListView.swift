@@ -43,10 +43,15 @@ struct SettingsListView: View {
                                 Text("\(key): \(setting.settings[key] ?? "")")
                             }
                         }
-                        .padding()
-                        .swipeActions(edge: .trailing) {
+                        .swipeActions(edge: .leading) {
                             Button {
-                                // some new view in here to edit setting ex: EditSettingSheet(setting: setting)
+                                // Present EditMachineSettingPage
+                                let editView = EditMachineSettingPage(machineID: machine_id, setting: setting)
+                                let hostingController = UIHostingController(rootView: editView)
+                                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                                   let rootViewController = windowScene.windows.first?.rootViewController {
+                                    rootViewController.present(hostingController, animated: true, completion: nil)
+                                }
                             } label: {
                                 Label("Edit", systemImage: "pencil")
                             }

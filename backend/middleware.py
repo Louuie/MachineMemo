@@ -7,6 +7,7 @@ import os
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY, options=ClientOptions(flow_type="pkce"))
+baseURl = "http://10.31.178.182:5001"
 
 def get_user_settings(func):
     @wraps(func)
@@ -135,7 +136,7 @@ def login_with_google(func):
                 {
                     "provider": "google",
                     "options": {
-                        "redirect_to": "http://192.168.1.47/callback" 
+                        "redirect_to": baseURl + "/callback" 
                     },
                 }
             )
@@ -164,7 +165,7 @@ def callback(func):
             }
             print(session.get('user_session'))
             session.modified = True
-            return redirect("http://192.168.1.47:5001/get_session")
+            return redirect(baseURl + "/get_session")
         except Exception as e:
             request.middleware_data = {"status": "error", "message": str(e)}
             return jsonify(request.middleware_data), 500
@@ -187,8 +188,47 @@ def get_session(func):
         return func(*args, **kwargs)
     return wrapper
 
+def update_setting(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        machine_id = request.args.get("machine_id")
+        setting_id = request.args.get("setting_id")
+        updated_settings = request.get_json()
+        
+        print(f"DEBUG: Received setting_id: {setting_id}")
+        print(f"DEBUG: Received updated settings: {updated_settings}")
+        
+        if not setting_id:
+            return {"status": "error", "message": "Missing setting_id in request"}, 400
+        if not updated_settings:
+            return {"status": "error", "message": "Missing updated settings in request"}, 400
+        
+        # Restructure the settings JSON to match required format
+        formatted_settings = {
+            "settings": {
+                "settings": updated_settings,
+                "machine_id": machine_id,
+            }
+        }
+        
+        print(f"DEBUG: Formatted settings payload: {formatted_settings}")
+        
+        try:
+            data = supabase.table("settings").update(formatted_settings).eq("id", setting_id).execute()
+            print(f"DEBUG: Supabase response: {data}")
+            
+            assert len(data.data) > 0
+            request.middleware_data = {
+                "status": "success", 
+                "message": "Successfully updated machine setting",
+                "data": data.data[0]
+            }
+        except Exception as e:
+            print(f"DEBUG: Error in update_setting: {str(e)}")
+            request.middleware_data = {"status": "error", "message": str(e)}
+        return func(*args, **kwargs)
+    return wrapper
 
         
-
 
 

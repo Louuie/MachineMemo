@@ -7,11 +7,30 @@
 import Foundation
 import SafariServices
 
+enum APIError: Error {
+    case serverError(message: String)
+    case networkError(error: Error)
+    // ... other error cases
+}
+
+struct APIResponse<T: Decodable>: Decodable {
+    let status: String
+    let message: String?
+    let data: T?
+}
+
+struct Update: Decodable, Identifiable {
+    let id: Int
+    let name: String
+    // ... other properties
+}
+
 class MachineAPI {
     static let shared = MachineAPI()
+    let baseURL = "http://10.31.178.182:5001"
 
     func fetchMachines() async throws -> [Machine] {
-        guard let url = URL(string: "http://192.168.1.47:5001/machines?type=User") else {
+        guard let url = URL(string: "\(baseURL)/machines?type=User") else {
             throw URLError(.badURL)
         }
 
@@ -26,7 +45,7 @@ class MachineAPI {
     }
     
     func addMachine(machine: Machine) async throws -> AddMachine {
-        guard let url = URL(string: "http://192.168.1.47:5001/machines?name=\(machine.name)&type=User&brand=\(machine.brand)") else {
+        guard let url = URL(string: "\(baseURL)/machines?name=\(machine.name)&type=User&brand=\(machine.brand)") else {
             throw URLError(.badURL)
         }
 
@@ -51,7 +70,7 @@ class MachineAPI {
     }
     
     func addSetting(setting: Setting) async throws -> AddSetting {
-        guard let url = URL(string: "http://192.168.1.47:5001/settings?machine_id=\(setting.machine_id)") else {
+        guard let url = URL(string: "\(baseURL)/settings?machine_id=\(setting.machine_id)") else {
             throw URLError(.badURL)
         }
         
@@ -67,7 +86,7 @@ class MachineAPI {
         return response
     }
     func getSettings(machineID: String) async throws -> [Setting] {
-        guard let url = URL(string: "http://192.168.1.47:5001/settings?machine_id=\(machineID)") else {
+        guard let url = URL(string: "\(baseURL)/settings?machine_id=\(machineID)") else {
             throw URLError(.badURL)
         }
         let (data, _) = try await URLSession.shared.data(from: url)
@@ -88,13 +107,32 @@ class MachineAPI {
 
 
     func loginWithGoogle() {
-        guard let url = URL(string: "http://192.168.1.47:5001/google/login") else { return }
+        guard let url = URL(string: "\(baseURL)/google/login") else { return }
         
         let safariVC =  SFSafariViewController(url: url)
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let rootVC = windowScene.windows.first?.rootViewController {
             rootVC.present(safariVC, animated: true, completion: nil)
             //rootVC.dismiss(animated: true)
+        }
+    }
+    
+    func updateSetting(settingId: Int, updatedSettings: [String: String], machine_id: Int) async throws -> Setting {
+        let url = URL(string: "\(baseURL)/edit?setting_id=\(settingId)")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let jsonData = try JSONSerialization.data(withJSONObject: updatedSettings)
+        request.httpBody = jsonData
+        
+        let (data, _) = try await URLSession.shared.data(for: request)
+        let response = try JSONDecoder().decode(APIResponse<Setting>.self, from: data)
+        
+        if response.status == "success", let setting = response.data {
+            return setting
+        } else {
+            throw APIError.serverError(message: response.message ?? "Unknown error")
         }
     }
 

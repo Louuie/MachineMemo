@@ -21,10 +21,24 @@ struct AddMachineSettingPage: View {
         NavigationStack {
             Form {
                 ForEach(extraMachineSettings.indices, id: \.self) { index in
-                    Section("Create Setting \(index + 1)") {
-                        TextField("Setting Name", text: $extraMachineSettings[index])
-                        TextField("Setting Value", text: $extraSettingVal[index])
-                            .keyboardType(.numberPad)
+                    Section {
+                        VStack(alignment: .leading) {
+                            TextField("Setting Name", text: $extraMachineSettings[index])
+                            TextField("Setting Value", text: $extraSettingVal[index])
+                                .keyboardType(.numberPad)
+                        }
+                    } header: {
+                        Text("Create Setting #\(index + 1)")
+                    }
+                    .swipeActions {
+                        Button(role: .destructive) {
+                            withAnimation {
+                                extraMachineSettings.remove(at: index)
+                                extraSettingVal.remove(at: index)
+                            }
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
                     }
                 }
 
@@ -37,16 +51,6 @@ struct AddMachineSettingPage: View {
                 }
                 .tint(.blue)
 
-                // Remove Setting Button
-                Button(action: {
-                    if !extraMachineSettings.isEmpty {
-                        extraMachineSettings.removeLast()
-                        extraSettingVal.removeLast()
-                    }
-                }) {
-                    Text("Remove Setting")
-                }
-                .tint(.red)
 
                 // Submit Button
                 Button(action: {
@@ -88,25 +92,25 @@ struct AddMachineSettingPage: View {
         }
     }
 
-    private func addSetting(machine_id: String, settings: [String: String]) async {
-        do {
-            // Convert machine_id from String to Int
-            guard let machineIDAsInt = Int(machine_id) else {
-                errorMessage = "Invalid machine_id: \(machine_id)"
-                return
-            }
-
-            // Create the Setting object with the converted Int
-            let newSetting = Setting(id: nil, machine_id: machineIDAsInt, settings: settings, user_id: nil)
-            
-            // Send the request using the API
-            let addSettingResponse = try await MachineAPI.shared.addSetting(setting: newSetting)
-            print(addSettingResponse)
-            print(machine_id)
-        } catch {
-            errorMessage = "Failed to add the setting: \(error.localizedDescription)"
-        }
-    }
+//    private func addSetting(machine_id: String, settings: [String: String]) async {
+//        do {
+//            // Convert machine_id from String to Int
+//            guard let machineIDAsInt = Int(machine_id) else {
+//                errorMessage = "Invalid machine_id: \(machine_id)"
+//                return
+//            }
+//
+//            // Create the Setting object with the converted Int
+//            let newSetting = Setting(id: nil, machine_id: machineIDAsInt, settings: settings, user_id: nil)
+//            
+//            // Send the request using the API
+//            let addSettingResponse = try await MachineAPI.shared.addSetting(setting: newSetting)
+//            print(addSettingResponse)
+//            print(machine_id)
+//        } catch {
+//            errorMessage = "Failed to add the setting: \(error.localizedDescription)"
+//        }
+//    }
     
     private func validateFields() -> Bool {
         // Ensure no empty or whitespace-only fields and at least one setting exists

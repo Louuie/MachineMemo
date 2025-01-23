@@ -28,7 +28,7 @@ struct MachineListView: View {
                             NavigationLink(destination: MachineDetailsView(machine: machine)) {
                                 Text(machine.name)
                                     .font(.headline)
-                                Text("\(machine.type)")
+                                Text("\(machine.brand)")
                                     .font(.subheadline)
                                     .foregroundColor(.secondary)
                             }

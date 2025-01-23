@@ -86,10 +86,16 @@ struct EditMachineSettingPage: View {
             
             let updatedSetting = try await MachineAPI.shared.updateSetting(settingId: setting.id!, updatedSettings: updatedSettings, machine_id: machineIdAsInt)
             
-            print(updatedSetting)
             
-            dismiss()
+            print("Updated Setting: \(updatedSetting)")
+            DispatchQueue.main.async {
+                self.dismiss()
+            }
+            
         } catch {
+            DispatchQueue.main.async {
+                self.dismiss()
+            }
             errorMessage = "Failed to update the setting: \(error.localizedDescription)"
         }
     }

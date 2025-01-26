@@ -3,7 +3,7 @@
 //  MachineMemo
 //
 //  Created by Elias Dandouch on 1/5/25.
-//
+//  Modified by Eric Hurtado.
 
 import SwiftUI
 
@@ -24,11 +24,12 @@ struct MachineListView: View {
                         .padding()
                 } else {
                     List(machines) { machine in
-                        VStack(alignment: .leading) {
-                            NavigationLink(destination: MachineDetailsView(machine: machine)) {
+                        NavigationLink(destination: MachineDetailsView(machine: machine)) {
+                            VStack(alignment: .leading) {
                                 Text(machine.name)
                                     .font(.headline)
-                                Text("\(machine.brand)")
+                                    .foregroundColor(.primary)
+                                Text(machine.brand)
                                     .font(.subheadline)
                                     .foregroundColor(.secondary)
                             }

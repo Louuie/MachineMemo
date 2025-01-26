@@ -16,6 +16,7 @@ struct EditMachineSettingPage: View {
     @State var extraSettingVal: [String]
     @State private var showToast: Bool = false
     @Environment(\.dismiss) var dismiss
+    @AppStorage("shouldRefreshSettings") var shouldRefreshSettings = false
 
     init(machineID: String, setting: Setting) {
         self._machineID = State(initialValue: machineID)
@@ -28,10 +29,24 @@ struct EditMachineSettingPage: View {
         NavigationStack {
             Form {
                 ForEach(extraMachineSettings.indices, id: \.self) { index in
-                    Section("Edit Setting \(index + 1)") {
-                        TextField("Setting Name", text: $extraMachineSettings[index])
-                        TextField("Setting Value", text: $extraSettingVal[index])
-                            .keyboardType(.numberPad)
+                    Section {
+                        VStack(alignment: .leading) {
+                            TextField("Setting Name", text: $extraMachineSettings[index])
+                            TextField("Setting Value", text: $extraSettingVal[index])
+                                .keyboardType(.numberPad)
+                        }
+                    } header: {
+                        Text("Create Setting #\(index + 1)")
+                    }
+                    .swipeActions {
+                        Button(role: .destructive) {
+                            withAnimation {
+                                extraMachineSettings.remove(at: index)
+                                extraSettingVal.remove(at: index)
+                            }
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
                     }
                 }
 
@@ -68,6 +83,9 @@ struct EditMachineSettingPage: View {
             }
             .navigationTitle("Edit Settings")
         }
+        .onDisappear {
+            shouldRefreshSettings.toggle()
+        }
     }
     
     private func updateSettings() async {
@@ -86,9 +104,9 @@ struct EditMachineSettingPage: View {
             
             let updatedSetting = try await MachineAPI.shared.updateSetting(settingId: setting.id!, updatedSettings: updatedSettings, machine_id: machineIdAsInt)
             
-            
             print("Updated Setting: \(updatedSetting)")
             DispatchQueue.main.async {
+                shouldRefreshSettings.toggle()
                 self.dismiss()
             }
             

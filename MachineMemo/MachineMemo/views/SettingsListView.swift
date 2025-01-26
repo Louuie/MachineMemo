@@ -3,7 +3,7 @@
 //  MachineMemo
 //
 //  Created by Elias Dandouch on 1/9/25.
-//
+//  Modified by Eric Hurtado.
 
 import SwiftUI
 
@@ -12,6 +12,7 @@ struct SettingsListView: View {
     @State private var isLoading: Bool = true
     @State private var settings: [Setting] = [] // Array of `Setting` objects
     @State private var errorMessage: String? = ""
+    @AppStorage("shouldRefreshSettings") var shouldRefreshSettings = false
 
     var body: some View {
         NavigationStack {
@@ -45,7 +46,6 @@ struct SettingsListView: View {
                         }
                         .swipeActions(edge: .leading) {
                             Button {
-                                // Present EditMachineSettingPage
                                 let editView = EditMachineSettingPage(machineID: machine_id, setting: setting)
                                 let hostingController = UIHostingController(rootView: editView)
                                 if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -57,15 +57,19 @@ struct SettingsListView: View {
                             }
                         }
                     }
-
-                    
+                    .onChange(of: shouldRefreshSettings) { _ in
+                        Task {
+                            await refreshList()
+                        }
+                    }
                 }
             }
             .task {
                 await loadSettings()
             }
-            }
         }
+    }
+
     private func loadSettings() async {
         isLoading = true
         do {
@@ -77,8 +81,15 @@ struct SettingsListView: View {
             isLoading = false
         }
     }
-    
+
+    private func refreshList() async {
+        do {
+            settings = try await MachineAPI.shared.getSettings(machineID: machine_id)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
+}
 
 
 

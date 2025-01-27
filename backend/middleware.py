@@ -213,7 +213,7 @@ def update_setting(func):
             formatted_settings = {
                 "settings": {
                     "settings": updated_settings,
-                    "machine_id": ,
+                    "machine_id": existing_machine_id,
                 }
             }
             

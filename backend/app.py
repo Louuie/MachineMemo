@@ -1,8 +1,35 @@
-from flask import Flask, request, jsonify
-from middleware import get_user_settings, get_machines, add_machines, add_machine_settings
+from flask import Flask, request, jsonify, redirect
+from flask_cors import CORS
+from middleware import get_user_settings, get_machines, add_machines, add_machine_settings, login_with_google, callback, get_session, update_setting
+from datetime import timedelta
+import os
 
 def create_app():
     app = Flask(__name__)
+   # Session configuration
+    app.config.update(
+        SECRET_KEY=os.getenv('FLASK_SECRET_KEY', 'dev_key'),
+        PERMANENT_SESSION_LIFETIME=timedelta(days=7),
+        SESSION_COOKIE_SECURE=False,
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE='None'
+    )
+    
+    # Configure CORS
+    CORS(app, 
+         supports_credentials=True,
+         resources={
+             r"/*": {
+                 "origins": "*",
+                 "methods": ["GET", "POST", "PUT", "OPTIONS"],
+                 "allow_headers": ["Content-Type", "Authorization"]
+             }
+         })
+    @app.route("/get_session", methods=['GET'])
+    @get_session
+    def get_sess():
+        session = request.middleware_data
+        return ({"status": "success", "session": session})
     @app.route("/settings", methods=['GET'], endpoint='get_machine_settings_middleware_endpoint')
     @get_user_settings
     def get_settings():
@@ -11,6 +38,12 @@ def create_app():
     @app.route("/settings", methods=['POST'], endpoint='add_settings_middleware_endpoint')
     @add_machine_settings
     def add_settings():
+        middleware_data = request.middleware_data
+        return jsonify(middleware_data), 200 if middleware_data["status"] == "success" else 500
+    
+    @app.route("/edit", methods=['PUT'], endpoint='update_settings_middleware_endpoint')
+    @update_setting
+    def update_settings():
         middleware_data = request.middleware_data
         return jsonify(middleware_data), 200 if middleware_data["status"] == "success" else 500
     
@@ -24,6 +57,17 @@ def create_app():
     def add_machines_middleware():
         middleware_data = request.middleware_data
         return jsonify(middleware_data), 200 if middleware_data["status"] == "success" else 500
+    @app.route('/google/login', methods=['GET'], endpoint='google_login_middleware_endpoint')
+    @login_with_google
+    def signin_with_google():
+        middleware_url = request.middleware_data
+        print("Middleware_url", middleware_url)
+        return redirect(middleware_url)  # Redirects user to Google login
+
+    @app.route('/callback', methods=['GET'], endpoint='callback_middleware_endpoint')
+    @callback
+    def handle_callback():
+        pass
     return app
 
     # https://flask.palletsprojects.com/en/stable/quickstart/

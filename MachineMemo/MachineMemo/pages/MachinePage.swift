@@ -4,7 +4,6 @@
 //
 //  Created by Elias Dandouch on 1/5/25.
 //
-
 import SwiftUI
 
 struct MachinePage: View {
@@ -15,7 +14,7 @@ struct MachinePage: View {
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         NavigationLink(destination: AddMachinePage()) {
-                            Text("+")
+                            Image(systemName: "plus")
                         }
                     }
                 }

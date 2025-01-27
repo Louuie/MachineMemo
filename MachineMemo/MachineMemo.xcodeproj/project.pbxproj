@@ -6,10 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		070654DB2D2CF54C00A0E235 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 070654DA2D2CF54C00A0E235 /* Supabase */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXContainerItemProxy section */
 		64E84E7E2D2B82F80081D60C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -34,7 +30,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		070654E22D2CFC5900A0E235 /* Exceptions for "MachineMemo" folder in "MachineMemo" target */ = {
+		64A4C36E2D2D039F00B73444 /* Exceptions for "MachineMemo" folder in "MachineMemo" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -47,7 +43,7 @@
 		64E84E6F2D2B82F70081D60C /* MachineMemo */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				070654E22D2CFC5900A0E235 /* Exceptions for "MachineMemo" folder in "MachineMemo" target */,
+				64A4C36E2D2D039F00B73444 /* Exceptions for "MachineMemo" folder in "MachineMemo" target */,
 			);
 			path = MachineMemo;
 			sourceTree = "<group>";
@@ -59,7 +55,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				070654DB2D2CF54C00A0E235 /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -118,7 +113,6 @@
 			);
 			name = MachineMemo;
 			packageProductDependencies = (
-				070654DA2D2CF54C00A0E235 /* Supabase */,
 			);
 			productName = MachineMemo;
 			productReference = 64E84E6D2D2B82F70081D60C /* MachineMemo.app */;
@@ -197,7 +191,6 @@
 			mainGroup = 64E84E642D2B82F70081D60C;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				070654D92D2CF54C00A0E235 /* XCRemoteSwiftPackageReference "supabase-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 64E84E6E2D2B82F70081D60C /* Products */;
@@ -400,9 +393,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MachineMemo/Preview Content\"";
+				DEVELOPMENT_TEAM = MDF3N2T3GE;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MachineMemo/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -429,9 +424,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MachineMemo/Preview Content\"";
+				DEVELOPMENT_TEAM = MDF3N2T3GE;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MachineMemo/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -558,25 +555,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		070654D92D2CF54C00A0E235 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/supabase/supabase-swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.5.1;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		070654DA2D2CF54C00A0E235 /* Supabase */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 070654D92D2CF54C00A0E235 /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Supabase;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 64E84E652D2B82F70081D60C /* Project object */;
 }

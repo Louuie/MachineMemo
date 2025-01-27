@@ -27,7 +27,7 @@ struct Update: Decodable, Identifiable {
 
 class MachineAPI {
     static let shared = MachineAPI()
-    let baseURL = "http://192.168.1.109:5001"
+    let baseURL = "http://3.101.59.11:5001"
 
     func fetchMachines() async throws -> [Machine] {
         guard let url = URL(string: "\(baseURL)/machines?type=User") else {

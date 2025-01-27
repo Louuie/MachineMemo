@@ -7,7 +7,7 @@ import os
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY, options=ClientOptions(flow_type="pkce"))
-baseURl = "http://3.101.59.11:5001"
+baseURl = "http://192.168.1.109:5001"
 
 def get_user_settings(func):
     @wraps(func)
@@ -202,18 +202,23 @@ def update_setting(func):
             return {"status": "error", "message": "Missing setting_id in request"}, 400
         if not updated_settings:
             return {"status": "error", "message": "Missing updated settings in request"}, 400
-        
-        # Restructure the settings JSON to match required format
-        formatted_settings = {
-            "settings": {
-                "settings": updated_settings,
-                "machine_id": machine_id,
-            }
-        }
-        
-        print(f"DEBUG: Formatted settings payload: {formatted_settings}")
-        
         try:
+            current_settings = supabase.table("settings").select("*").eq("id", setting_id).execute()
+            if len(current_settings.data) == 0:
+                return {"status": "error", "message": "Setting not found!"}, 404
+
+            existing_machine_id = current_settings.data[0].get("machine_id")
+
+            # Restructure the settings JSON to match required format
+            formatted_settings = {
+                "settings": {
+                    "settings": updated_settings,
+                    "machine_id": ,
+                }
+            }
+            
+            print(f"DEBUG: Formatted settings payload: {formatted_settings}")
+        
             data = supabase.table("settings").update(formatted_settings).eq("id", setting_id).execute()
             print(f"DEBUG: Supabase response: {data}")
             
@@ -230,5 +235,3 @@ def update_setting(func):
     return wrapper
 
         
-
-

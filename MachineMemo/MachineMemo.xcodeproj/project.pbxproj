@@ -30,7 +30,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		64A4C36E2D2D039F00B73444 /* Exceptions for "MachineMemo" folder in "MachineMemo" target */ = {
+		64D40C842D4AE4BA0055E037 /* Exceptions for "MachineMemo" folder in "MachineMemo" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -43,7 +43,7 @@
 		64E84E6F2D2B82F70081D60C /* MachineMemo */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				64A4C36E2D2D039F00B73444 /* Exceptions for "MachineMemo" folder in "MachineMemo" target */,
+				64D40C842D4AE4BA0055E037 /* Exceptions for "MachineMemo" folder in "MachineMemo" target */,
 			);
 			path = MachineMemo;
 			sourceTree = "<group>";
@@ -190,8 +190,6 @@
 			);
 			mainGroup = 64E84E642D2B82F70081D60C;
 			minimizedProjectReferenceProxies = 1;
-			packageReferences = (
-			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 64E84E6E2D2B82F70081D60C /* Products */;
 			projectDirPath = "";
@@ -397,7 +395,6 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MachineMemo/Info.plist;
-				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -428,7 +425,6 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MachineMemo/Info.plist;
-				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

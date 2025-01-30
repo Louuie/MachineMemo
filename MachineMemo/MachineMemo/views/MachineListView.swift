@@ -51,8 +51,8 @@ struct MachineListView: View {
             .task {
                 await loadMachines()
             }
+            .searchable(text: $search)
         }
-        .searchable(text: $search)
     }
 
     private func loadMachines() async {

@@ -15,7 +15,7 @@ struct MachineListView: View {
     
     var filteredMachines: [Machine] {
         if search.isEmpty {
-            return machines
+            return machines.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
         } else {
             return machines.filter { machine in
                 machine.name.localizedCaseInsensitiveContains(search) || machine.brand.localizedCaseInsensitiveContains(search)

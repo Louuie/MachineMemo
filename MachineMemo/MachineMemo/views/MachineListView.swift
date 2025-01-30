@@ -13,7 +13,7 @@ struct MachineListView: View {
     @State private var errorMessage: String?
     @State private var search: String = ""
     
-    var filteredItems: [Machine] {
+    var filteredMachines: [Machine] {
         if search.isEmpty {
             return machines
         } else {
@@ -33,7 +33,7 @@ struct MachineListView: View {
                         .multilineTextAlignment(.center)
                         .padding()
                 } else {
-                    List(filteredItems) { machine in
+                    List(filteredMachines) { machine in
                         NavigationLink(destination: MachineDetailsView(machine: machine)) {
                             VStack(alignment: .leading) {
                                 Text(machine.name)

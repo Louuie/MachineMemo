@@ -11,7 +11,17 @@ struct MachineListView: View {
     @State private var machines: [Machine] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
-
+    @State private var search: String = ""
+    
+    var filteredItems: [Machine] {
+        if search.isEmpty {
+            return machines
+        } else {
+            return machines.filter { machine in
+                machine.name.localizedCaseInsensitiveContains(search) || machine.brand.localizedCaseInsensitiveContains(search)
+            }
+        }
+    }
     var body: some View {
         NavigationStack {
             VStack {
@@ -23,7 +33,7 @@ struct MachineListView: View {
                         .multilineTextAlignment(.center)
                         .padding()
                 } else {
-                    List(machines) { machine in
+                    List(filteredItems) { machine in
                         NavigationLink(destination: MachineDetailsView(machine: machine)) {
                             VStack(alignment: .leading) {
                                 Text(machine.name)
@@ -42,6 +52,7 @@ struct MachineListView: View {
                 await loadMachines()
             }
         }
+        .searchable(text: $search)
     }
 
     private func loadMachines() async {

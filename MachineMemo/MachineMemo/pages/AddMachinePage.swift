@@ -14,7 +14,8 @@ struct AddMachinePage: View {
     @State var isLoading: Bool = false
     @State var navigateScreen: Bool = false
     @State var errorMessage: String = ""
-    @State var addMachineResponse: AddMachine = AddMachine(status: "", message: "")
+    @State var machineID: Int = 0
+    @State var addMachineResponse: AddMachine = AddMachine(status: "", message: "", id: 0)
     
     var body: some View {
         NavigationStack {
@@ -47,7 +48,8 @@ struct AddMachinePage: View {
                 }
             }
             .navigationDestination(isPresented: $navigateScreen) {
-                MachineDetailsView(machine: Machine(id: nil, name: machineName, type: "User", brand: machineBrand))
+                // TODO: Fix it so we arent passing down nil to the MachineDetailsView
+                MachineDetailsView(machine: Machine(id: machineID, name: machineName, type: "User", brand: machineBrand))
             }
             .navigationTitle("Add Machine")
         }
@@ -60,6 +62,7 @@ struct AddMachinePage: View {
             
             let newMachine = Machine(id: nil, name: name, type: "User", brand: brand)
             addMachineResponse = try await MachineAPI.shared.addMachine(machine: newMachine)
+            machineID = addMachineResponse.id
             
             isLoading = false
         } catch {

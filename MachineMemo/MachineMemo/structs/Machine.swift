@@ -21,4 +21,5 @@ struct Machine: Identifiable, Codable {
 struct AddMachine: Codable {
     let status: String
     let message: String
+    let id: Int
 }

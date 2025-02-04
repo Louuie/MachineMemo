@@ -15,17 +15,11 @@ struct MachineDetailsView: View {
                 Text("\(machine.brand)").font(.title)
                 Text("\(machine.name)").font(.subheadline)
                 SettingsListView(machine_id: String(machine.id ?? 0))
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-//                            NavigationLink(destination: AddMachineSettingPage(machineID: machine.id != nil ? String(machine.id!) : "")) {
-//                                Image(systemName: "plus")
-//                                Text("\(machine.id != nil ? String(machine.id!) : "")")
-//                            }
-
-                        }
-                    }
             }.padding(.leading)
 
         }
     }
+}
+#Preview {
+    MachineDetailsView(machine: Machine(id: 0, name: "Test", type: "User", brand: "Test"))
 }

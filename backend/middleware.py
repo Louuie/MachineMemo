@@ -98,7 +98,8 @@ def add_machines(func):
         try:
             data = supabase.table("machines").insert({"name": name, "type": machine_type, "brand": brand}).execute()
             assert len(data.data) > 0
-            request.middleware_data = {"status": "success", "message": "successfully added machine to db"}
+            machine_id = data.data[0].get("id")
+            request.middleware_data = {"status": "success", "message": "successfully added machine to db", "id": machine_id}
         except Exception as e:
             request.middleware_data = {"status": "error", "message": str(e)}
         return func(*args, **kwargs)

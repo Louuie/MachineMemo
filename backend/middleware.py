@@ -13,9 +13,6 @@ def get_user_settings(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         machine_id = request.args.get("machine_id")
-        # user_session = session.get('user_session')
-        # if not user_session:
-        #     return {"status": "error", "message": "Missing user_session in request"}, 400
 
         try:
             # Query Supabase for settings
@@ -85,9 +82,7 @@ def add_machines(func):
         name = request.args.get("name")
         machine_type = request.args.get("type")
         brand = request.args.get("brand")
-        print(session.get('user_session'))
         user_sess = session.get('user_session')
-        print(user_sess)
 
         if not name:
             return {"status": "error", "message": "Missing machine name in request"}, 400
@@ -159,36 +154,23 @@ def callback(func):
         try:
             auth = supabase.auth.exchange_code_for_session({"auth_code": code})
             session['user_session'] = {
+            "user_data": {
+                "name": auth.session.user.user_metadata.get('name'),
+                "email": auth.session.user.user_metadata.get('email'),
+                "profile_picture:": auth.user.user_metadata.get('avatar_url'),
+            },
             "access_token": auth.session.access_token,
             "refresh_token": auth.session.refresh_token,
             "expires_at": auth.session.expires_at,
             "user_id": auth.user.id
             }
-            print(session.get('user_session'))
             session.modified = True
-            return redirect(baseURl + "/get_session")
+            return redirect(baseURl + "/user")
         except Exception as e:
             request.middleware_data = {"status": "error", "message": str(e)}
             return jsonify(request.middleware_data), 500
 
     return wrapper
-def get_session(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        user_sess = session.get('user_session')
-        print(user_sess)
-        if not user_sess:
-            return jsonify({"status": "error", "message": "Missing user_session please login first"}), 400
-        sess = {
-            "access_token": user_sess['access_token'],
-            "refresh_token": user_sess['refresh_token'],
-            "expires_at": user_sess['expires_at'],
-            "user_id": user_sess['user_id']
-        }
-        request.middleware_data = sess
-        return func(*args, **kwargs)
-    return wrapper
-
 def update_setting(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -234,5 +216,18 @@ def update_setting(func):
             request.middleware_data = {"status": "error", "message": str(e)}
         return func(*args, **kwargs)
     return wrapper
+
+def user(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        response = supabase.auth.get_user().user.user_metadata
+        request.middleware_data = {
+            "email": response.get('email'),
+            "name": response.get('name'),
+            "profile_picture": response.get('avatar_url')
+        }
+        return func(*args, **kwargs)
+    return wrapper
+
 
         

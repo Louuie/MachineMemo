@@ -27,6 +27,7 @@ struct Update: Decodable, Identifiable {
 
 class MachineAPI {
     static let shared = MachineAPI()
+    // AWS: http://3.101.59.11:5001
     let baseURL = "http://3.101.59.11:5001"
 
     func fetchMachines() async throws -> [Machine] {
@@ -133,6 +134,25 @@ class MachineAPI {
             return setting
         } else {
             throw APIError.serverError(message: response.message ?? "Unknown error")
+        }
+    }
+    func loadUserProfile() async throws -> Profile {
+        guard let url = URL(string: "\(baseURL)/user") else {
+            throw URLError(.badURL)
+        }
+        let (data, _) = try await URLSession.shared.data(from: url)
+        
+        // Debugging: Print raw JSON data
+        print("Raw Response:", String(data: data, encoding: .utf8) ?? "Invalid Data")
+        
+        // Decode the JSON response
+        do {
+            let response = try JSONDecoder().decode(ProfileResponse.self, from: data)
+            print("Decoded Response:", response)
+            return response.data
+        } catch {
+            print("Decoding Error:", error.localizedDescription)
+            throw error
         }
     }
 

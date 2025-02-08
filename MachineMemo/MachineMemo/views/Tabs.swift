@@ -17,7 +17,7 @@ struct Tabs: View {
                 MachinePage()
             }
             Tab("Profile", systemImage: "person") {
-                Text("Profile Page")
+                ProfilePage()
             }
         }
     }

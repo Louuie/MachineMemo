@@ -5,18 +5,26 @@
 //  Created by Elias Dandouch on 1/7/25.
 //
 import UIKit
+import Foundation
+
+extension Notification.Name {
+    static let loginSuccess = Notification.Name("loginSuccess")
+}
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        guard let urlContext = URLContexts.first else { return }
-        let url = urlContext.url
+        print("Scene?")
+        guard let url = URLContexts.first?.url else { return }
 
-        // Handle the URL scheme (e.g., myapp://callback?code=123)
-        if url.scheme == "myapp", url.host == "callback" {
-            NotificationCenter.default.post(name: .NSCalendarDayChanged, object: nil, userInfo: ["url": url])
+        if url.absoluteString.contains("callback") {
+            print("✅ Deep link detected: \(url)")
+
+            // Notify app that login was successful
+            NotificationCenter.default.post(name: .loginSuccess, object: nil)
         }
     }
 }
+
 

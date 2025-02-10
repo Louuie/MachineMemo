@@ -8,6 +8,10 @@
 import SwiftUI
 
 struct MachineListView: View {
+    private var groupedMachines: [String: [Machine]] {
+        Dictionary(grouping: filteredMachines, by: { $0.brand })
+    }
+
     @State private var machines: [Machine] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
@@ -33,15 +37,20 @@ struct MachineListView: View {
                         .multilineTextAlignment(.center)
                         .padding()
                 } else {
-                    List(filteredMachines) { machine in
-                        NavigationLink(destination: MachineDetailsView(machine: machine)) {
-                            VStack(alignment: .leading) {
-                                Text(machine.name)
-                                    .font(.headline)
-                                    .foregroundColor(.primary)
-                                Text(machine.brand)
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
+                    List {
+                        let sortedBrands = groupedMachines.keys.sorted() // Break sorting into a separate step
+                        
+                        ForEach(sortedBrands, id: \.self) { brand in
+                            if let machines = groupedMachines[brand] { // Explicitly unwrap array
+                                Section(header: Text(brand).font(.headline)) {
+                                    ForEach(machines) { machine in
+                                        NavigationLink(destination: MachineDetailsView(machine: machine)) {
+                                            Text(machine.name)
+                                                .font(.body)
+                                                .foregroundColor(.primary)
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -54,6 +63,8 @@ struct MachineListView: View {
             .searchable(text: $search)
         }
     }
+
+
 
     private func loadMachines() async {
         do {

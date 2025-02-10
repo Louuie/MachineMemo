@@ -7,7 +7,7 @@ import os
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY, options=ClientOptions(flow_type="pkce"))
-baseURl = "http://3.101.59.11:5001"
+baseURl = "http://192.168.1.30:5001"
 
 def get_user_settings(func):
     @wraps(func)
@@ -165,11 +165,23 @@ def callback(func):
             "user_id": auth.user.id
             }
             session.modified = True
-            return redirect(baseURl + "/user")
+            print("Taking you to the callback app?")
+            return redirect("myapp://callback")
         except Exception as e:
             request.middleware_data = {"status": "error", "message": str(e)}
             return jsonify(request.middleware_data), 500
 
+    return wrapper
+def logout(func):
+    wraps(func)
+    def wrapper(*args, **kwargs):
+        # Sign the user out
+        logout_response = supabase.auth.sign_out()
+        print(f"logout_response: {logout_response}")
+        request.middleware_data = {
+            "status": "success"
+        }
+        return func(*args, **kwargs)
     return wrapper
 def update_setting(func):
     @wraps(func)

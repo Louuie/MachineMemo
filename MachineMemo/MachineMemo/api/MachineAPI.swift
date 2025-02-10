@@ -28,7 +28,7 @@ struct Update: Decodable, Identifiable {
 class MachineAPI {
     static let shared = MachineAPI()
     // AWS: http://3.101.59.11:5001
-    let baseURL = "http://3.101.59.11:5001"
+    let baseURL = "http://192.168.1.30:5001"
 
     func fetchMachines() async throws -> [Machine] {
         guard let url = URL(string: "\(baseURL)/machines?type=User") else {
@@ -150,6 +150,48 @@ class MachineAPI {
             let response = try JSONDecoder().decode(ProfileResponse.self, from: data)
             print("Decoded Response:", response)
             return response.data
+        } catch {
+            print("Decoding Error:", error.localizedDescription)
+            throw error
+        }
+    }
+    func isLoggedIn() async throws -> Bool {
+        guard let url = URL(string: "\(baseURL)/user") else {
+            throw URLError(.badURL)
+        }
+        let (data, _) = try await URLSession.shared.data(from: url)
+        
+        // Debugging: Print raw JSON data
+        print("Raw Response:", String(data: data, encoding: .utf8) ?? "Invalid Data")
+        
+        // Decode the JSON response
+        do {
+            let response = try JSONDecoder().decode(UserResponse.self, from: data)
+            print("Decoded Response:", response)
+            if response.status == "success" {
+                return true
+            } else { return false }
+        } catch {
+            print("Decoding Error:", error.localizedDescription)
+            throw error
+        }
+    }
+    func logout() async throws -> Bool {
+        guard let url = URL(string: "\(baseURL)/logout") else {
+            throw URLError(.badURL)
+        }
+        let (data, _) = try await URLSession.shared.data(from: url)
+        
+        // Debugging: Print raw JSON data
+        print("Raw Response:", String(data: data, encoding: .utf8) ?? "Invalid Data")
+        
+        // Decode the JSON response
+        do {
+            let response = try JSONDecoder().decode(UserResponse.self, from: data)
+            print("Decoded Response:", response)
+            if response.status == "success" {
+                return true
+            } else { return false }
         } catch {
             print("Decoding Error:", error.localizedDescription)
             throw error

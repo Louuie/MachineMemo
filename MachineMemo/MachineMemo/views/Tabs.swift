@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct Tabs: View {
+    @State private var profile: Profile = Profile(name: "", email: "", profile_picture: "")
     var body: some View {
         TabView {
             Tab("Home", systemImage: "house") {
@@ -17,12 +18,18 @@ struct Tabs: View {
                 MachinePage()
             }
             Tab("Profile", systemImage: "person") {
-                ProfilePage()
+                ProfilePage(profile: profile)
             }
         }
+        .task {
+            await getUser()
+        }
     }
-}
-
-#Preview {
-    Tabs()
+    private func getUser() async {
+        do {
+            profile = try await MachineAPI.shared.loadUserProfile()
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
 }

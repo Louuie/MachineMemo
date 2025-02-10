@@ -1,4 +1,4 @@
-//
+    //
 //  ProfilePage.swift
 //  MachineMemo
 //
@@ -8,40 +8,52 @@
 import SwiftUI
 
 struct ProfilePage: View {
-    @State private var errorMessage: String = ""
-    @State private var profile: Profile = Profile(name: "", email: "", profile_picture: "")
+    @State var profile: Profile
+    @State private var isLoggedOut: Bool = false
     var body: some View {
-        VStack {
-            AsyncImage(url: URL(string: profile.profile_picture)) { phase in
-                if let image = phase.image {
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } else if phase.error != nil {
-                    Text("No image available")
-                } else {
-                    Image(systemName: "photo")
+        NavigationView {
+            VStack {
+                AsyncImage(url: URL(string: profile.profile_picture)) { phase in
+                    if let image = phase.image {
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    } else if phase.error != nil {
+                        Text("No image available")
+                    } else {
+                        Image(systemName: "photo")
+                    }
                 }
+                .frame(width: 250, height: 250)
+                .border(Color.gray)
+                Text("\(profile.name)")
+                Text("\(profile.email)")
+                Button(action: {
+                    Task {
+                        await logout()
+                    }
+                 }) {
+                     Image(systemName: "rectangle.portrait.and.arrow.right")
+                         .imageScale(.large)
+                     Text("Log out")
+                         .font(.system(.title2))
+                 }
+                 .buttonStyle(.borderedProminent)
+                 .buttonBorderShape(.roundedRectangle(radius: 4))
+                 .controlSize(.large)
+                 .tint(.red)
+                 .fullScreenCover(isPresented: $isLoggedOut) {
+                     LoginPage()
+                 }
             }
-            .frame(width: 250, height: 250)
-            .border(Color.gray)
-            Text("\(profile.name)")
-            Text("\(profile.email)")
-        }
-        .task {
-            await loadUserProfile()
         }
     }
-    private func loadUserProfile() async {
+    private func logout() async {
         do {
-            profile = try await MachineAPI.shared.loadUserProfile()
+            isLoggedOut = try await MachineAPI.shared.logout()
+            print(isLoggedOut)
         } catch {
-            errorMessage = error.localizedDescription
-            print(errorMessage)
+            print(error.localizedDescription)
         }
     }
-}
-
-#Preview {
-    ProfilePage()
 }

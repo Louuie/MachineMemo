@@ -9,18 +9,14 @@ import UIKit
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        // Check if the URL matches your scheme and path
-        if url.scheme == "myapp" || url.host == "callback" {
-            let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems
+        print("✅ Deep link received in AppDelegate: \(url)")
 
-            // Extract the token from the query parameters
-            if let token = queryItems?.first(where: { $0.name == "token" })?.value {
-                print("Access token: \(token)")
-                // Handle the token (e.g., save it, make API requests, or update the UI)
-            }
+        if url.absoluteString.contains("myapp://callback") {
+            NotificationCenter.default.post(name: .loginSuccess, object: nil)
             return true
         }
         return false
     }
 }
+
 

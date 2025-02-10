@@ -27,17 +27,7 @@ struct Update: Decodable, Identifiable {
 
 class MachineAPI {
     static let shared = MachineAPI()
-    var baseURL: String = ""
-
-    private init() {
-        if let awsIP = ProcessInfo.processInfo.environment["AWSIP"] {
-            print("✅ AWS Backend IP: \(awsIP)")
-            baseURL = "\(awsIP)"  // Use AWS IP for backend
-        } else {
-            print("❌ AWSIP environment variable not found. Using default local IP.")
-            //baseURL = "http://192.168.1.30:5001" // Default to local IP
-        }
-    }
+    var baseURL: String = "http://3.101.59.11:5001"
 
     func fetchMachines() async throws -> [Machine] {
         guard let url = URL(string: "\(baseURL)/machines?type=User") else {

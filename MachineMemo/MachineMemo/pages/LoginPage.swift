@@ -62,14 +62,7 @@ struct LoginPage: View {
     }
 
     private func performLogin() {
-        var url: String = ""
-        if let awsIP = ProcessInfo.processInfo.environment["AWSIP"] {
-            print("✅ AWS Backend IP: \(awsIP)/google/login")
-            url = "\(awsIP)/google/login"  // Use AWS IP for backend
-        } else {
-            print("❌ AWSIP environment variable not found. Using default local IP.")
-            //url = "http://192.168.1.30:5001" // Default to local IP
-        }
+        var url: String = "http://3.101.59.11:5001/google/login"
         guard let url_other = URL(string: url) else {
             isLoading = false
             errorMessage = "Invalid login URL"

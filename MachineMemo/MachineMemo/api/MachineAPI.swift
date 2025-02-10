@@ -27,7 +27,7 @@ struct Update: Decodable, Identifiable {
 
 class MachineAPI {
     static let shared = MachineAPI()
-    var baseURL: String = "http://3.101.59.11:5001"
+    var baseURL: String = "https://machinememo.onrender.com"
 
     func fetchMachines() async throws -> [Machine] {
         guard let url = URL(string: "\(baseURL)/machines?type=User") else {

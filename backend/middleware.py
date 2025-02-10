@@ -124,11 +124,11 @@ def add_machine_settings(func):
     return wrapper
     
 def login_with_google(func):
-    print(baseURl)
     @wraps (func)
     def wrapper(*args, **kwargs):
         try:
             # Redirect user to Google login
+            print(f"AWSIP?? {baseURl}")
             response = supabase.auth.sign_in_with_oauth(
                 {
                     "provider": "google",

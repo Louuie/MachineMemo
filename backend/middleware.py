@@ -7,7 +7,7 @@ import os
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY, options=ClientOptions(flow_type="pkce"))
-baseURl = "http://192.168.1.30:5001"
+baseURl = os.getenv("AWSIP")
 
 def get_user_settings(func):
     @wraps(func)
@@ -124,6 +124,7 @@ def add_machine_settings(func):
     return wrapper
     
 def login_with_google(func):
+    print(baseURl)
     @wraps (func)
     def wrapper(*args, **kwargs):
         try:

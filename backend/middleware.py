@@ -7,6 +7,7 @@ import os
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY, options=ClientOptions(flow_type="pkce"))
+# No need for environment variable for this
 baseURl = "http://3.101.59.11:5001"
 
 def get_user_settings(func):

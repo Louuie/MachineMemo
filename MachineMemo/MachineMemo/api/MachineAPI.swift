@@ -210,5 +210,24 @@ class MachineAPI {
         let response = try JSONDecoder().decode(MachineResponse.self, from: data)
         return response.data
     }
+    
+    func updateLastUsed(settingId: Int) async throws {
+        guard let url = URL(string: "\(baseURL)/settings/last-used?setting_id=\(settingId)") else {
+            throw URLError(.badURL)
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+        
+        let (data, _) = try await URLSession.shared.data(for: request)
+        let response = try JSONDecoder().decode(APIResponse<EmptyResponse>.self, from: data)
+        
+        if response.status != "success" {
+            throw APIError.serverError(message: response.message ?? "Failed to update last used time")
+        }
+    }
+    
+    // Helper struct for empty responses
+    private struct EmptyResponse: Codable {}
 }
 

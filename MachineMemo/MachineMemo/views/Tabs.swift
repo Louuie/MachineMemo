@@ -21,7 +21,7 @@ struct Tabs: View {
             Tab("Your Machines", systemImage: "list.star") {
                 YourMachinesPage()
             }
-            Tab("Calculator", systemImage: "dumbell.fill") {
+            Tab("Calculator", systemImage: "dumbbell") {
                 BarbellCalculatorView()
             }
             Tab("Profile", systemImage: "person") {

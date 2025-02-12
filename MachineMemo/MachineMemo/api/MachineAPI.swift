@@ -28,7 +28,7 @@ struct Update: Decodable, Identifiable {
 
 class MachineAPI {
     static let shared = MachineAPI()
-    var baseURL: String = "http://192.168.1.29:5001"
+    var baseURL: String = "https://machinememo-5791cb7039d5.herokuapp.com/"
 
     func fetchMachines() async throws -> [Machine] {
         guard let url = URL(string: "\(baseURL)/machines?type=User") else {

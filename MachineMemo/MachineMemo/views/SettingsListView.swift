@@ -17,7 +17,7 @@ struct SettingsListView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(alignment: .center, spacing: 8) { // Reduced from 16 to 8
+            VStack(alignment: .center, spacing: 8) { // Prev 16
                 // Machine Info Section
                 VStack(spacing: 12) {
                     Image(systemName: "dumbbell.fill")
@@ -34,7 +34,7 @@ struct SettingsListView: View {
                     }
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 12) // Reduced from 20 to 12
+                .padding(.vertical, 12) // Prev 20
                 .background(Color(.systemBackground))
                 
                 // Settings Section

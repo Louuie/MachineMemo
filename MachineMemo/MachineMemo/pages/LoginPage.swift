@@ -96,7 +96,7 @@ struct LoginPage: View {
     }
 
     private func performLogin() {
-        let url: String = "https://machinememo-5791cb7039d5.herokuapp.com/google/login"
+        let url: String = "http://192.168.1.29:5001/google/login"
         guard let url_other = URL(string: url) else {
             isLoading = false
             errorMessage = "Invalid login URL"

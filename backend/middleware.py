@@ -9,7 +9,7 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY, options=ClientOptions(flow_type="pkce"))
 # No need for environment variable for this
-baseURl = "https://machinememo-5791cb7039d5.herokuapp.com"
+baseURl = "http://192.168.1.29:5001"
 
 def get_user_settings(func):
     @wraps(func)
@@ -203,13 +203,14 @@ def logout(func):
 def update_setting(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
+        machine_id = request.args.get("machine_id")
         setting_id = request.args.get("setting_id")
         updated_settings = request.get_json()
         
         print(f"DEBUG: Received setting_id: {setting_id}")
         print(f"DEBUG: Received updated settings: {updated_settings}")
         
-        if not setting_id: 
+        if not setting_id:
             return {"status": "error", "message": "Missing setting_id in request"}, 400
         if not updated_settings:
             return {"status": "error", "message": "Missing updated settings in request"}, 400
@@ -218,20 +219,26 @@ def update_setting(func):
             if len(current_settings.data) == 0:
                 return {"status": "error", "message": "Setting not found!"}, 404
 
-            # Update the settings directly
-            data = supabase.table("settings").update({"settings": updated_settings}).eq("id", setting_id).execute()
+            existing_machine_id = current_settings.data[0].get("machine_id")
+
+            # Restructure the settings JSON to match required format
+            formatted_settings = {
+                "settings": {
+                    "settings": updated_settings,
+                    "machine_id": existing_machine_id,
+                }
+            }
+            
+            print(f"DEBUG: Formatted settings payload: {formatted_settings}")
+        
+            data = supabase.table("settings").update(formatted_settings).eq("id", setting_id).execute()
             print(f"DEBUG: Supabase response: {data}")
             
             assert len(data.data) > 0
             request.middleware_data = {
                 "status": "success", 
                 "message": "Successfully updated machine setting",
-                "data": {
-                    "id": data.data[0].get("id"),
-                    "user_id": data.data[0].get("user_id"),
-                    "machine_id": data.data[0].get("machine_id"),
-                    "settings": data.data[0].get("settings")
-                }
+                "data": data.data[0]
             }
         except Exception as e:
             print(f"DEBUG: Error in update_setting: {str(e)}")

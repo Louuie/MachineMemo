@@ -1,3 +1,13 @@
+//
+// YourMachinesPage.swift
+// MachineMemo
+//
+// This page displays a list of machines that the current user has settings for.
+// It queries the settings table to get all machine_ids associated with the user,
+// then fetches the corresponding machine details from the machines table.
+// Unlike the MachineListView, this shows only machines the user has interacted with
+// and does not group them by brand.
+
 import SwiftUI
 
 struct YourMachinesPage: View {

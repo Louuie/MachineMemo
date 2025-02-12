@@ -3,6 +3,7 @@
 //  MachineMemo
 //
 //  Created by Elias Dandouch on 1/6/25.
+//  Modified by Eric Hurtado.
 //
 
 import SwiftUI
@@ -39,23 +40,56 @@ struct LoginPage: View {
 
     private var loginContent: some View {
         NavigationStack {
-            VStack {
+            VStack(spacing: 30) {
+                // Logo and Title
+                VStack(spacing: 20) {
+                    Image(systemName: "m.circle.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 100, height: 100)
+                        .foregroundColor(.blue)
+                    
+                    Text("MachineMemo")
+                        .font(.system(size: 32, weight: .bold))
+                        .foregroundColor(.primary)
+                }
+                .padding(.top, 100)
+                
+                Spacer()
+                
+                // Login Button
                 Button(action: {
                     isLoading = true
                     performLogin()
                 }) {
-                    if isLoading {
-                        ProgressView()
-                    } else {
-                        Text("Sign in with Google")
+                    HStack {
+                        Image(systemName: "person.fill")
+                            .foregroundColor(.white)
+                        
+                        if isLoading {
+                            ProgressView()
+                                .tint(.white)
+                        } else {
+                            Text("Sign in with Google")
+                                .foregroundColor(.white)
+                                .font(.headline)
+                        }
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.blue)
+                    .cornerRadius(10)
+                    .shadow(radius: 3)
                 }
-
+                .padding(.horizontal, 40)
+                
                 if !errorMessage.isEmpty {
                     Text(errorMessage)
                         .foregroundColor(.red)
                         .font(.caption)
                 }
+                
+                Spacer()
             }
             .padding()
         }
@@ -75,7 +109,7 @@ struct LoginPage: View {
     private func handleDeepLink(_ url: URL) {
         print("Received deep link: \(url.absoluteString)")
 
-        if url.absoluteString.starts(with: "myapp://callback") {
+        if url.absoluteString.starts(with: "machinememo://callback") {
             print("Recognized login callback URL!")
             isLoggedIn = true
             showSafariView = false

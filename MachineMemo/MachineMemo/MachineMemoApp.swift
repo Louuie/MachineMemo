@@ -6,15 +6,34 @@
 //  Modified by Eric Hurtado.
 //
 import SwiftUI
+
 @main
 struct MachineMemoApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
-    @State private var isLoginSheetPresented = true  // Default to login screen
+    @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
 
     var body: some Scene {
         WindowGroup {
-            LoginPage()
+            ContentView()
         }
     }
 }
+
+struct ContentView: View {
+    @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
+
+    var body: some View {
+        Group {
+            if isLoggedIn {
+                Tabs() // Main app
+            } else {
+                LoginPage()
+            }
+        }
+        .onAppear {
+            print("isLoggedIn at launch:", isLoggedIn)
+        }
+    }
+}
+

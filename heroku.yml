@@ -4,4 +4,4 @@ build:
   config:
     PYTHONPATH: backend
   run:
-    web: cd backend && apt-get update && apt-get install -y libjpeg-dev zlib1g-dev && python -m flask run --host=0.0.0.0 --port=5001
+    web: cd backend && apt-get update && apt-get install -y libjpeg-dev zlib1g-dev && flask run --host=0.0.0.0 --port=5001

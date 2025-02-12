@@ -9,7 +9,7 @@
 			<string>Louie.MachineMemo</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>myapp</string>
+				<string>machinememo</string>
 			</array>
 		</dict>
 	</array>

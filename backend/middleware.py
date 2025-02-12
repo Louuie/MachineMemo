@@ -181,7 +181,7 @@ def callback(func):
             }
             session.modified = True
             print("Taking you to the callback app?")
-            return redirect("myapp://callback")
+            return redirect("machinememo://callback")
         except Exception as e:
             request.middleware_data = {"status": "error", "message": str(e)}
             return jsonify(request.middleware_data), 500

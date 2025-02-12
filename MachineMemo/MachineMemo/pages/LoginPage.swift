@@ -109,7 +109,7 @@ struct LoginPage: View {
     private func handleDeepLink(_ url: URL) {
         print("Received deep link: \(url.absoluteString)")
 
-        if url.absoluteString.starts(with: "myapp://callback") {
+        if url.absoluteString.starts(with: "machinememo://callback") {
             print("Recognized login callback URL!")
             isLoggedIn = true
             showSafariView = false

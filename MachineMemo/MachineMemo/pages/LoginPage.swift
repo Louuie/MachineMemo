@@ -3,6 +3,7 @@
 //  MachineMemo
 //
 //  Created by Elias Dandouch on 1/6/25.
+//  Modified by Eric Hurtado.
 //
 
 import SwiftUI
@@ -119,7 +120,4 @@ struct LoginPage: View {
         }
     }
 
-}
-#Preview {
-    LoginPage()
 }

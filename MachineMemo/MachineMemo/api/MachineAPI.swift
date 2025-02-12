@@ -3,6 +3,7 @@
 //  MachineMemo
 //
 //  Created by Elias Dandouch on 1/5/25.
+//  Modified by Eric Hurtado.
 //
 import Foundation
 import SafariServices
@@ -27,7 +28,7 @@ struct Update: Decodable, Identifiable {
 
 class MachineAPI {
     static let shared = MachineAPI()
-    var baseURL: String = "http://10.31.178.182:5001"
+    var baseURL: String = "https://machinememo.onrender.com"
 
     func fetchMachines() async throws -> [Machine] {
         guard let url = URL(string: "\(baseURL)/machines?type=User") else {

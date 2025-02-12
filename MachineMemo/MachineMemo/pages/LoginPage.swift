@@ -62,7 +62,7 @@ struct LoginPage: View {
     }
 
     private func performLogin() {
-        let url: String = "http://10.31.178.182:5001/google/login"
+        let url: String = "https://machinememo.onrender.com/google/login"
         guard let url_other = URL(string: url) else {
             isLoading = false
             errorMessage = "Invalid login URL"

@@ -27,7 +27,7 @@ struct Update: Decodable, Identifiable {
 
 class MachineAPI {
     static let shared = MachineAPI()
-    var baseURL: String = "https://machinememo.onrender.com"
+    var baseURL: String = "http://10.31.178.182:5001"
 
     func fetchMachines() async throws -> [Machine] {
         guard let url = URL(string: "\(baseURL)/machines?type=User") else {
@@ -197,5 +197,17 @@ class MachineAPI {
         }
     }
 
+    func getUserMachines() async throws -> [Machine] {
+        guard let url = URL(string: "\(baseURL)/user/machines") else {
+            throw URLError(.badURL)
+        }
+        
+        let (data, _) = try await URLSession.shared.data(from: url)
+        
+        print("Raw Response:", String(data: data, encoding: .utf8) ?? "Invalid Data")
+        
+        let response = try JSONDecoder().decode(MachineResponse.self, from: data)
+        return response.data
+    }
 }
 

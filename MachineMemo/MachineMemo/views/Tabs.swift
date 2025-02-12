@@ -17,9 +17,16 @@ struct Tabs: View {
             Tab("Machines", systemImage: "figure.strengthtraining.traditional") {
                 MachinePage()
             }
+            Tab("Your Machines", systemImage: "list.star") {
+                YourMachinesPage()
+            }
+            Tab("Calculator", systemImage: "dumbell") {
+                BarbellCalculatorView()
+            }
             Tab("Profile", systemImage: "person") {
                 ProfilePage(profile: profile)
             }
+
         }
         .task {
             await getUser()

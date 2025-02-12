@@ -76,13 +76,6 @@ struct SettingsListView: View {
             // Fetch settings from your API
             settings = try await MachineAPI.shared.getSettings(machineID: machine_id)
             
-            // Update last_used for each setting when they are viewed
-            for setting in settings {
-                if let id = setting.id {
-                    try await MachineAPI.shared.updateLastUsed(settingId: id)
-                }
-            }
-            
             isLoading = false
         } catch {
             errorMessage = error.localizedDescription

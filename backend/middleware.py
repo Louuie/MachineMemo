@@ -38,7 +38,7 @@ def get_user_settings(func):
                         "id": item.get("id"),
                         "user_id": item.get("user_id"),
                         "machine_id": item.get("machine_id"),
-                        "settings": item.get("settings", {}).get("settings", {}) if isinstance(item.get("settings"), dict) else item.get("settings", {})
+                        "settings": item.get("settings", {}).get("settings", {})
                     }
                     for item in data
                 ],
@@ -209,7 +209,7 @@ def update_setting(func):
         print(f"DEBUG: Received setting_id: {setting_id}")
         print(f"DEBUG: Received updated settings: {updated_settings}")
         
-        if not setting_id:
+        if not setting_id: 
             return {"status": "error", "message": "Missing setting_id in request"}, 400
         if not updated_settings:
             return {"status": "error", "message": "Missing updated settings in request"}, 400

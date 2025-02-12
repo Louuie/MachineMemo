@@ -26,6 +26,7 @@ struct MachineListView: View {
             }
         }
     }
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -38,10 +39,10 @@ struct MachineListView: View {
                         .padding()
                 } else {
                     List {
-                        let sortedBrands = groupedMachines.keys.sorted() // Break sorting into a separate step
+                        let sortedBrands = groupedMachines.keys.sorted()
                         
                         ForEach(sortedBrands, id: \.self) { brand in
-                            if let machines = groupedMachines[brand] { // Explicitly unwrap array
+                            if let machines = groupedMachines[brand] {
                                 Section(header: Text(brand).font(.headline)) {
                                     ForEach(machines) { machine in
                                         NavigationLink(destination: MachineDetailsView(machine: machine)) {
@@ -63,8 +64,6 @@ struct MachineListView: View {
             .searchable(text: $search)
         }
     }
-
-
 
     private func loadMachines() async {
         do {

@@ -28,7 +28,7 @@ struct Update: Decodable, Identifiable {
 
 class MachineAPI {
     static let shared = MachineAPI()
-    var baseURL: String = "https://machinememo.onrender.com"
+    var baseURL: String = "https://machinememo-5791cb7039d5.herokuapp.com/"
 
     func fetchMachines() async throws -> [Machine] {
         guard let url = URL(string: "\(baseURL)/machines?type=User") else {
@@ -210,5 +210,8 @@ class MachineAPI {
         let response = try JSONDecoder().decode(MachineResponse.self, from: data)
         return response.data
     }
+    
+    // Helper struct for empty responses
+    private struct EmptyResponse: Codable {}
 }
 

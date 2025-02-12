@@ -74,7 +74,8 @@ struct SettingsListView: View {
         isLoading = true
         do {
             // Fetch settings from your API
-            settings = try await MachineAPI.shared.getSettings(machineID: machine_id) // Assume this returns `SettingResponse`
+            settings = try await MachineAPI.shared.getSettings(machineID: machine_id)
+            
             isLoading = false
         } catch {
             errorMessage = error.localizedDescription

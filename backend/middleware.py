@@ -2,13 +2,14 @@ from flask import request, redirect, jsonify, session
 from supabase import create_client, ClientOptions
 from functools import wraps
 import os
+import datetime
 
 # Initialize Supabase client
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY, options=ClientOptions(flow_type="pkce"))
 # No need for environment variable for this
-baseURl = "https://machinememo.onrender.com"
+baseURl = "https://machinememo-5791cb7039d5.herokuapp.com"
 
 def get_user_settings(func):
     @wraps(func)
@@ -18,9 +19,18 @@ def get_user_settings(func):
         try:
             # Query Supabase for settings
             response = supabase.table("settings").select("*").eq("machine_id", machine_id).execute()
-            data = response.data  # Extract data
+            data = response.data
 
-            # Format the data
+            # Format timestamp in PostgreSQL timestamptz format
+            # current_time = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f%z")
+            # data = supabase.table("settings").update({"last_used": current_time}).eq("id", setting_id).execute()
+            
+            # Update last_used timestamp for these settings
+            current_time = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f%z")
+            for item in data:
+                supabase.table("settings").update({"last_used": current_time}).eq("id", item.get("id")).execute()
+
+            # Format the data to match Swift struct
             formatted_results = {
                 "status": "success",
                 "data": [
@@ -28,21 +38,19 @@ def get_user_settings(func):
                         "id": item.get("id"),
                         "user_id": item.get("user_id"),
                         "machine_id": item.get("machine_id"),
-                        # Flatten the settings structure
                         "settings": item.get("settings", {}).get("settings", {})
                     }
                     for item in data
                 ],
             }
 
-
-            # Attach to request object for downstream use
             request.middleware_data = formatted_results
         except Exception as e:
             request.middleware_data = {"status": "error", "message": str(e)}
 
         return func(*args, **kwargs)
     return wrapper
+
 def get_machines(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -77,6 +85,7 @@ def get_machines(func):
             request.middleware_data = {"status": "error", "message": str(e)}
         return func(*args, **kwargs)
     return wrapper
+
 def add_machines(func):
     @wraps (func)
     def wrapper(*args, **kwargs):
@@ -100,21 +109,25 @@ def add_machines(func):
             request.middleware_data = {"status": "error", "message": str(e)}
         return func(*args, **kwargs)
     return wrapper
+
 def add_machine_settings(func):
     @wraps (func)
     def wrapper(*args, **kwargs):
         machine_id = request.args.get("machine_id")
         user_session = session.get('user_session')      
         settings = request.get_json()
-        # TODO: Add Error handlers for the query parameters 
-        # if not user_session or 'access_token' not in user_session:
-        #     return {"status": "error", "message": "Missing user_id in request, please login"}, 400
+        
         if not settings:
             return {"status": "error", "message": "Missing settings in request"}, 400
+            
+        # Format timestamp in PostgreSQL timestamptz format
+        current_time = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f%z")
         machine_settings = {
             "machine_id": machine_id,
             "settings": settings,
+            "last_used": current_time
         }
+        
         try:
             data = supabase.table("settings").insert(machine_settings).execute()
             assert len(data.data) > 0
@@ -174,6 +187,7 @@ def callback(func):
             return jsonify(request.middleware_data), 500
 
     return wrapper
+
 def logout(func):
     wraps(func)
     def wrapper(*args, **kwargs):
@@ -185,17 +199,17 @@ def logout(func):
         }
         return func(*args, **kwargs)
     return wrapper
+
 def update_setting(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        machine_id = request.args.get("machine_id")
         setting_id = request.args.get("setting_id")
         updated_settings = request.get_json()
         
         print(f"DEBUG: Received setting_id: {setting_id}")
         print(f"DEBUG: Received updated settings: {updated_settings}")
         
-        if not setting_id:
+        if not setting_id: 
             return {"status": "error", "message": "Missing setting_id in request"}, 400
         if not updated_settings:
             return {"status": "error", "message": "Missing updated settings in request"}, 400
@@ -204,26 +218,20 @@ def update_setting(func):
             if len(current_settings.data) == 0:
                 return {"status": "error", "message": "Setting not found!"}, 404
 
-            existing_machine_id = current_settings.data[0].get("machine_id")
-
-            # Restructure the settings JSON to match required format
-            formatted_settings = {
-                "settings": {
-                    "settings": updated_settings,
-                    "machine_id": existing_machine_id,
-                }
-            }
-            
-            print(f"DEBUG: Formatted settings payload: {formatted_settings}")
-        
-            data = supabase.table("settings").update(formatted_settings).eq("id", setting_id).execute()
+            # Update the settings directly
+            data = supabase.table("settings").update({"settings": updated_settings}).eq("id", setting_id).execute()
             print(f"DEBUG: Supabase response: {data}")
             
             assert len(data.data) > 0
             request.middleware_data = {
                 "status": "success", 
                 "message": "Successfully updated machine setting",
-                "data": data.data[0]
+                "data": {
+                    "id": data.data[0].get("id"),
+                    "user_id": data.data[0].get("user_id"),
+                    "machine_id": data.data[0].get("machine_id"),
+                    "settings": data.data[0].get("settings")
+                }
             }
         except Exception as e:
             print(f"DEBUG: Error in update_setting: {str(e)}")
@@ -247,18 +255,33 @@ def get_user_machines(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         try:
-            # First get all settings to get machine_ids
-            settings = supabase.table("settings").select("machine_id").execute()
+            # Get all settings with their last_used timestamps
+            settings = supabase.table("settings").select("machine_id,last_used").order("last_used", desc=True).execute()
             
             if not settings.data:
                 request.middleware_data = {"status": "success", "data": []}
                 return func(*args, **kwargs)
 
-            # Get unique machine_ids
-            machine_ids = list(set(item['machine_id'] for item in settings.data))
+            # Get unique machine_ids, preserving order of most recently used
+            seen = set()
+            machine_ids = [item['machine_id'] for item in settings.data if item['machine_id'] not in seen and not seen.add(item['machine_id'])]
             
-            # Then get machine details for those ids
+            if not machine_ids:
+                request.middleware_data = {"status": "success", "data": []}
+                return func(*args, **kwargs)
+            
+            # Get machine details for those ids
             machines = supabase.table("machines").select("*").in_("id", machine_ids).execute()
+            
+            # Create a mapping of machine_id to last_used time
+            last_used_map = {item['machine_id']: item['last_used'] for item in settings.data}
+            
+            # Sort machines by their most recent last_used time
+            sorted_machines = sorted(
+                machines.data,
+                key=lambda m: last_used_map.get(m['id']) or "",
+                reverse=True
+            )
             
             # Format the response
             result = [
@@ -268,7 +291,7 @@ def get_user_machines(func):
                     "brand": machine['brand'],
                     "type": machine['type']
                 }
-                for machine in machines.data
+                for machine in sorted_machines
             ]
             
             request.middleware_data = {
@@ -279,3 +302,4 @@ def get_user_machines(func):
             request.middleware_data = {"status": "error", "message": str(e)}
         return func(*args, **kwargs)
     return wrapper
+

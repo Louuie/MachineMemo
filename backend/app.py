@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS
-from middleware import get_user_settings, get_machines, add_machines, add_machine_settings, login_with_google, callback, update_setting, user, logout, get_user_machines, update_last_used
+from middleware import get_user_settings, get_machines, add_machines, add_machine_settings, login_with_google, callback, update_setting, user, logout, get_user_machines
 from datetime import timedelta
 import os
 
@@ -76,12 +76,6 @@ def create_app():
     @app.route("/user/machines", methods=['GET'], endpoint='get_user_machines_middleware_endpoint')
     @get_user_machines
     def get_user_machines_endpoint():
-        middleware_data = request.middleware_data
-        return jsonify(middleware_data), 200 if middleware_data["status"] == "success" else 500
-
-    @app.route("/settings/last-used", methods=['PUT'], endpoint='update_last_used_middleware_endpoint')
-    @update_last_used
-    def update_last_used_endpoint():
         middleware_data = request.middleware_data
         return jsonify(middleware_data), 200 if middleware_data["status"] == "success" else 500
 

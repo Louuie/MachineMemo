@@ -9,7 +9,7 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY, options=ClientOptions(flow_type="pkce"))
 # No need for environment variable for this
-baseURl = "https://machinememo.onrender.com"
+baseURl = "http://192.168.1.29:5001"
 
 def get_user_settings(func):
     @wraps(func)
@@ -21,6 +21,10 @@ def get_user_settings(func):
             response = supabase.table("settings").select("*").eq("machine_id", machine_id).execute()
             data = response.data
 
+            # Format timestamp in PostgreSQL timestamptz format
+            # current_time = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f%z")
+            # data = supabase.table("settings").update({"last_used": current_time}).eq("id", setting_id).execute()
+            
             # Update last_used timestamp for these settings
             current_time = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f%z")
             for item in data:
@@ -81,6 +85,7 @@ def get_machines(func):
             request.middleware_data = {"status": "error", "message": str(e)}
         return func(*args, **kwargs)
     return wrapper
+
 def add_machines(func):
     @wraps (func)
     def wrapper(*args, **kwargs):
@@ -104,6 +109,7 @@ def add_machines(func):
             request.middleware_data = {"status": "error", "message": str(e)}
         return func(*args, **kwargs)
     return wrapper
+
 def add_machine_settings(func):
     @wraps (func)
     def wrapper(*args, **kwargs):
@@ -181,6 +187,7 @@ def callback(func):
             return jsonify(request.middleware_data), 500
 
     return wrapper
+
 def logout(func):
     wraps(func)
     def wrapper(*args, **kwargs):
@@ -192,6 +199,7 @@ def logout(func):
         }
         return func(*args, **kwargs)
     return wrapper
+
 def update_setting(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -240,27 +248,6 @@ def user(func):
             "name": response.get('name'),
             "profile_picture": response.get('avatar_url')
         }
-        return func(*args, **kwargs)
-    return wrapper
-
-def update_last_used(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        setting_id = request.args.get("setting_id")
-        if not setting_id:
-            return {"status": "error", "message": "Missing setting_id in request"}, 400
-            
-        try:
-            # Format timestamp in PostgreSQL timestamptz format
-            current_time = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f%z")
-            data = supabase.table("settings").update({"last_used": current_time}).eq("id", setting_id).execute()
-            
-            request.middleware_data = {
-                "status": "success",
-                "message": "Successfully updated last_used timestamp"
-            }
-        except Exception as e:
-            request.middleware_data = {"status": "error", "message": str(e)}
         return func(*args, **kwargs)
     return wrapper
 
@@ -315,5 +302,4 @@ def get_user_machines(func):
             request.middleware_data = {"status": "error", "message": str(e)}
         return func(*args, **kwargs)
     return wrapper
-
 

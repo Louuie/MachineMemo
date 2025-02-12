@@ -1,3 +1,9 @@
+//
+//  BarbellCalculatorView.swift
+//  MachineMemo
+//
+//  Created by Eric Hurtado on 1/12/25.
+//
 import SwiftUI
 
 enum PlateColor {

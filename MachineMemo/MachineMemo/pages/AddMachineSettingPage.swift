@@ -3,6 +3,7 @@
 //  MachineMemo
 //
 //  Created by Elias Dandouch on 1/9/25.
+//  Modified by Eric Hurtado.
 //
 
 import SwiftUI

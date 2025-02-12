@@ -3,6 +3,7 @@
 //  MachineMemo
 //
 //  Created by Elias Dandouch on 1/5/25.
+//  Modified by Eric Hurtado.
 //
 
 import SwiftUI
@@ -20,7 +21,7 @@ struct Tabs: View {
             Tab("Your Machines", systemImage: "list.star") {
                 YourMachinesPage()
             }
-            Tab("Calculator", systemImage: "dumbell") {
+            Tab("Calculator", systemImage: "dumbbell") {
                 BarbellCalculatorView()
             }
             Tab("Profile", systemImage: "person") {

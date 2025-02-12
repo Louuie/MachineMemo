@@ -243,5 +243,39 @@ def user(func):
         return func(*args, **kwargs)
     return wrapper
 
+def get_user_machines(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            # First get all settings to get machine_ids
+            settings = supabase.table("settings").select("machine_id").execute()
+            
+            if not settings.data:
+                request.middleware_data = {"status": "success", "data": []}
+                return func(*args, **kwargs)
 
-        
+            # Get unique machine_ids
+            machine_ids = list(set(item['machine_id'] for item in settings.data))
+            
+            # Then get machine details for those ids
+            machines = supabase.table("machines").select("*").in_("id", machine_ids).execute()
+            
+            # Format the response
+            result = [
+                {
+                    "id": machine['id'],
+                    "name": machine['name'],
+                    "brand": machine['brand'],
+                    "type": machine['type']
+                }
+                for machine in machines.data
+            ]
+            
+            request.middleware_data = {
+                "status": "success",
+                "data": result
+            }
+        except Exception as e:
+            request.middleware_data = {"status": "error", "message": str(e)}
+        return func(*args, **kwargs)
+    return wrapper

@@ -3,6 +3,7 @@
 //  MachineMemo
 //
 //  Created by Elias Dandouch on 1/5/25.
+//  Modified by Eric Hurtado.
 //
 import Foundation
 import SafariServices
@@ -197,5 +198,17 @@ class MachineAPI {
         }
     }
 
+    func getUserMachines() async throws -> [Machine] {
+        guard let url = URL(string: "\(baseURL)/user/machines") else {
+            throw URLError(.badURL)
+        }
+        
+        let (data, _) = try await URLSession.shared.data(from: url)
+        
+        print("Raw Response:", String(data: data, encoding: .utf8) ?? "Invalid Data")
+        
+        let response = try JSONDecoder().decode(MachineResponse.self, from: data)
+        return response.data
+    }
 }
 

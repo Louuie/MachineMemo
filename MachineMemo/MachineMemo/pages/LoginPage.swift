@@ -5,40 +5,16 @@
 //  Created by Elias Dandouch on 1/6/25.
 //  Modified by Eric Hurtado.
 //
-
 import SwiftUI
 
 struct LoginPage: View {
-    @State private var isLoggedIn: Bool = false
+    @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
     @State private var errorMessage: String = ""
     @State private var isLoading: Bool = false
     @State private var showSafariView: Bool = false
     @State private var loginURL: URL?
 
     var body: some View {
-        Group {
-            if isLoggedIn {
-                Tabs() // Replace with your main app view
-            } else {
-                loginContent
-            }
-        }
-        .animation(.easeInOut, value: isLoggedIn) // Smooth transition
-        .onOpenURL { url in
-            handleDeepLink(url)
-        }
-        .sheet(isPresented: $showSafariView) {
-            if let url = loginURL {
-                SafariView(url: url, onLoginSuccess: {
-                    print("Safari Login Successful, Dismissing Sheet")
-                    isLoggedIn = true
-                    showSafariView = false
-                })
-            }
-        }
-    }
-
-    private var loginContent: some View {
         NavigationStack {
             VStack(spacing: 30) {
                 // Logo and Title
@@ -93,6 +69,18 @@ struct LoginPage: View {
             }
             .padding()
         }
+        .onOpenURL { url in
+            handleDeepLink(url)
+        }
+        .sheet(isPresented: $showSafariView) {
+            if let url = loginURL {
+                SafariView(url: url, onLoginSuccess: {
+                    print("Safari Login Successful, Dismissing Sheet")
+                    isLoggedIn = true
+                    showSafariView = false
+                })
+            }
+        }
     }
 
     private func performLogin() {
@@ -119,5 +107,4 @@ struct LoginPage: View {
             print("Unrecognized deep link: \(url.absoluteString)")
         }
     }
-
 }

@@ -6,11 +6,11 @@
 //  Modified by Eric Hurtado.
 //
 import SwiftUI
-
+extension Notification.Name {
+    static let loginSuccess = Notification.Name("loginSuccess")
+}
 @main
 struct MachineMemoApp: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    
     @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
 
     var body: some Scene {
@@ -26,14 +26,16 @@ struct ContentView: View {
     var body: some View {
         Group {
             if isLoggedIn {
-                Tabs() // Main app
+                Tabs()
+                    .transition(.identity) // No transition for main app
             } else {
                 LoginPage()
+                    .transition(.move(edge: .top).combined(with: .opacity)) // Slide-up effect for login
             }
         }
-        .onAppear {
-            print("isLoggedIn at launch:", isLoggedIn)
-        }
+        .animation(.easeInOut(duration: 0.45), value: isLoggedIn) // Ensures smooth transition when toggling
     }
 }
+
+
 

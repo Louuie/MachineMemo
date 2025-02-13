@@ -11,7 +11,7 @@ import SafariServices
 import SwiftUI
 import SafariServices
 
-struct SafariView: UIViewControllerRepresentable {
+struct LoginSafariView: UIViewControllerRepresentable {
     let url: URL
     let onLoginSuccess: () -> Void
 

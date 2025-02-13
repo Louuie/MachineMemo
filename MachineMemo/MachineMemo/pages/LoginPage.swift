@@ -74,7 +74,7 @@ struct LoginPage: View {
         }
         .sheet(isPresented: $showSafariView) {
             if let url = loginURL {
-                SafariView(url: url, onLoginSuccess: {
+                LoginSafariView(url: url, onLoginSuccess: {
                     print("Safari Login Successful, Dismissing Sheet")
                     isLoggedIn = true
                     showSafariView = false

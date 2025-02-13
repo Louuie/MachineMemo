@@ -11,14 +11,7 @@ struct MachineDetailsView: View {
     let machine: Machine
     
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 12) {
-                Text(machine.brand).font(.title)
-                Text(machine.name).font(.subheadline)
-                SettingsListView(machine_id: String(machine.id ?? 0))
-            }
-            .padding(.leading)
-        }
+        SettingsListView(machine_id: String(machine.id ?? 0), machine: machine)
     }
 }
 

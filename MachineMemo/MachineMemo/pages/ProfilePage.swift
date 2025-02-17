@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ProfilePage: View {
     @State var profile: Profile
+    @State var appVersion: String
+    @State var buildNumber: String
     @State private var showSafari = false
     @State private var selectedURL: URL = URL(string: "https://www.example.com")!
     @State private var showConfirmDialog = false
@@ -50,7 +52,22 @@ struct ProfilePage: View {
                 Section(header: Text("About")) {
                     AboutRow(title: "Terms of Use", icon: "doc.text", url: "https://www.example.com/terms", showSafari: $showSafari, selectedURL: $selectedURL)
                     AboutRow(title: "Privacy Policy", icon: "hand.raised", url: "https://www.example.com/privacy", showSafari: $showSafari, selectedURL: $selectedURL)
-                    AboutRow(title: "Check for updates", icon: "info.circle", url: "https://www.example.com/updates", showSafari: $showSafari, selectedURL: $selectedURL)
+                    HStack {
+                        Image(systemName: "info.circle")
+                        Text("Check for updates")
+                        Spacer()
+                        Text("\(appVersion)(\(buildNumber))")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.trailing)
+                        Image(systemName: "chevron.right") // Mimic NavigationLink arrow
+                            .foregroundStyle(.secondary)
+                    }
+                    .contentShape(Rectangle()) // Make the whole row tappable
+                    .onTapGesture {
+                        selectedURL = URL(string: "https://www.example.com/updates")!
+                        showSafari = true
+                    }
                 }
 
                 // Logout Section

@@ -321,5 +321,28 @@ class MachineAPI {
             throw error
         }
     }
+    func isTokenValid(token: String) async throws -> Bool {
+        guard let url = URL(string: "\(baseURL)/auth/validate") else {
+            throw URLError(.badURL)
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+        let (_, response) = try await session.data(for: request)
+
+        if let httpResponse = response as? HTTPURLResponse {
+            if httpResponse.statusCode == 200 {
+                return true
+            } else if httpResponse.statusCode == 401 {
+                print("Token expired")
+                return false
+            }
+        }
+
+        throw URLError(.cannotDecodeContentData)
+    }
+
 }
 

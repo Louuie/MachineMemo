@@ -10,6 +10,8 @@ import SwiftUI
 
 struct Tabs: View {
     @State private var profile: Profile = Profile(name: "", email: "", profile_picture: "")
+    @State private var appVersion: String = ""
+    @State private var buildNumber: String = ""
     var body: some View {
         TabView {
             Tab("Home", systemImage: "house") {
@@ -25,7 +27,7 @@ struct Tabs: View {
                 BarbellCalculatorView()
             }
             Tab("Profile", systemImage: "person") {
-                ProfilePage(profile: profile)
+                ProfilePage(profile: profile, appVersion: appVersion, buildNumber: buildNumber)
             }
 
         }
@@ -36,8 +38,24 @@ struct Tabs: View {
     private func getUser() async {
         do {
             profile = try await MachineAPI.shared.loadUserProfile()
+            appVersion = getAppVersion()
+            buildNumber = getBuildNumber()
         } catch {
             print(error.localizedDescription)
         }
+    }
+    
+    private func getAppVersion() -> String {
+        if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+            return appVersion
+        }
+        return "Unknown"
+    }
+    
+    private func getBuildNumber() -> String {
+        if let buildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String {
+            return buildNumber
+        }
+        return "Unknown"
     }
 }

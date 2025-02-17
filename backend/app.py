@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, redirect, session
 from flask_cors import CORS
 from middleware import (
     get_user_settings, get_machines, add_machines, 
-    login_with_google, callback, user, logout, get_user_machines, add_machine_settings, update_setting
+    login_with_google, callback, user, logout, get_user_machines, add_machine_settings, update_setting, validate_token
 )
 from datetime import timedelta
 import os
@@ -109,10 +109,20 @@ def create_app():
         sess = session.get('user_session')
         print(f"Found user session: {sess}")
         return jsonify({"message": "Success", "session": sess}), 200
+    @app.route("/auth/validate", methods=["GET"])
+    @validate_token
+    def auth_validate():
+        """Validates token and returns user details"""
+        user = request.user  # 🔹 Retrieve user from request
+
+        return jsonify({
+            "status": "success",
+            "email": user.email,
+            "name": user.user_metadata.get("name"),
+            "profile_picture": user.user_metadata.get("avatar_url"),
+        })
 
     return app
-
-
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
     app = create_app()

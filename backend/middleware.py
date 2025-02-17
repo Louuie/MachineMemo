@@ -440,6 +440,28 @@ def get_user_machines(func):
             request.middleware_data = {"status": "error", "message": str(e)}
 
         return func(*args, **kwargs)
+    return wrapper
+def validate_token(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        auth_header = request.headers.get("Authorization")
+        if not auth_header or not auth_header.startswith("Bearer "):
+            return jsonify({"status": "error", "message": "No token provided"}), 401
 
+        token = auth_header.split("Bearer ")[-1].strip()
+        if not token:
+            return jsonify({"status": "error", "message": "Invalid token"}), 401
+
+        try:
+            auth_response = supabase.auth.get_user(token)
+            if not auth_response or not auth_response.user:
+                return jsonify({"status": "error", "message": "Invalid or expired token"}), 401
+
+            request.user = auth_response.user  # 🔹 Attach user to request for later use
+            return func(*args, **kwargs)
+
+        except Exception as e:
+            print(f"Token validation failed: {e}")
+            return jsonify({"status": "error", "message": "Token expired"}), 401
     return wrapper
 

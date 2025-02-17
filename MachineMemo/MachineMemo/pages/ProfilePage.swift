@@ -86,15 +86,18 @@ struct ProfilePage: View {
         do {
             let success = try await MachineAPI.shared.logout()
             if success {
-                // Clear stored login data
-                isLoggedIn = false
+                isLoggedIn = false  // Clear local session
                 UserDefaults.standard.removeObject(forKey: "isLoggedIn")
                 UserDefaults.standard.synchronize()
+
+                // Send logout event
             }
         } catch {
             print(error.localizedDescription)
         }
     }
+
+
 }
 // Struct used for the About section, mostly needed cause of the SafariWebView
 struct AboutRow: View {

@@ -11,14 +11,14 @@ extension Notification.Name {
 }
 @main
 struct MachineMemoApp: App {
-    @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
-
     var body: some Scene {
         WindowGroup {
             ContentView()
         }
     }
+
 }
+
 
 struct ContentView: View {
     @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
@@ -27,15 +27,21 @@ struct ContentView: View {
         Group {
             if isLoggedIn {
                 Tabs()
-                    .transition(.identity) // No transition for main app
+                    .transition(.identity)
             } else {
                 LoginPage()
-                    .transition(.move(edge: .top).combined(with: .opacity)) // Slide-up effect for login
+                    .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
-        .animation(.easeInOut(duration: 0.45), value: isLoggedIn) // Ensures smooth transition when toggling
+        .animation(.easeInOut(duration: 0.45), value: isLoggedIn)
+        .onReceive(NotificationCenter.default.publisher(for: .loginSuccess)) { _ in
+            print("🔄 Login successful! Updating session state.")
+            isLoggedIn = true
+        }
     }
 }
+
+
 
 
 

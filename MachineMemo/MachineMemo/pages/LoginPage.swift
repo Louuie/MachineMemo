@@ -73,7 +73,7 @@ struct LoginPage: View {
 
     private func performLogin() {
         // Your backend's Google OAuth endpoint
-        let authURL = URL(string: "http://192.168.1.5:5001/google/login")!
+        let authURL = URL(string: "https://machinememo-5791cb7039d5.herokuapp.com/google/login")!
         
         // Custom URL scheme for redirect (e.g., your-app://oauth-callback)
         let callbackScheme = "machinememo" // Match your app's URL scheme

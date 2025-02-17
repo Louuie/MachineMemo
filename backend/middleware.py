@@ -4,7 +4,7 @@ from supabase_client import supabase  # Use the shared Supabase client
 import datetime
 
 # Base URL for OAuth redirect
-BASE_URL = "http://192.168.1.5:5001"
+BASE_URL = "https://machinememo-5791cb7039d5.herokuapp.com"
 
 def get_user_settings(func):
     @wraps(func)

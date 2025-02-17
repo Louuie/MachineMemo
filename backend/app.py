@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify, redirect, session
 from flask_cors import CORS
-from flask_session import Session
 from middleware import (
     get_user_settings, get_machines, add_machines, 
     login_with_google, callback, user, logout, get_user_machines, add_machine_settings, update_setting
@@ -23,9 +22,6 @@ def create_app():
         SESSION_REDIS=redis.StrictRedis(host="localhost", port=6379, db=0, decode_responses=False)
     )
 
-    # Initialize Flask-Session
-    Session(app)
-
     # Configure CORS
     CORS(app, 
          supports_credentials=True,
@@ -37,11 +33,7 @@ def create_app():
              }
          })
 
-    # ==========================================================
-    # ✅ RESTORED ROUTES (ORIGINAL + UPDATED)
-    # ==========================================================
-
-    # 🔹 GET machine settings
+    # GET machine settings
     @app.route("/settings", methods=['GET'], endpoint='get_machine_settings_middleware_endpoint')
     @get_user_settings
     def get_settings():
@@ -69,14 +61,14 @@ def create_app():
         middleware_data = request.middleware_data
         return jsonify(middleware_data), 200 if middleware_data["status"] == "success" else 500
 
-    # 🔹 ADD new machine (RESTORED)
+    # ADD new machine
     @app.route('/machines', methods=['POST'], endpoint='add_machines_middleware_endpoint')
     @add_machines
     def add_machines_middleware():
         middleware_data = request.middleware_data
         return jsonify(middleware_data), 200 if middleware_data["status"] == "success" else 500
 
-    # 🔹 LOGIN with Google OAuth
+    # LOGIN with Google OAuth
     @app.route('/google/login', methods=['GET'], endpoint='google_login_middleware_endpoint')
     @login_with_google
     def signin_with_google():
@@ -84,12 +76,12 @@ def create_app():
         print("Middleware_url", middleware_url)
         return redirect(middleware_url)
 
-    # 🔹 CALLBACK route after Google OAuth
+    # CALLBACK route after Google OAuth
     @app.route('/callback', methods=['GET'], endpoint='callback_middleware_endpoint')
     @callback
     def handle_callback():
         pass
-    # 🔹 GET user info
+    # GET user info
     @app.route("/user", methods=['GET'], endpoint='get_user_middleware_endpoint')
     @user
     def get_user():
@@ -97,25 +89,25 @@ def create_app():
         print(user_data)
         return jsonify({"status": "success", "data": user_data}), 200
 
-    # 🔹 LOGOUT user
+    # LOGOUT user
     @app.route("/logout", methods=['GET'], endpoint='log_user_out_middleware_endpoint')
     @logout
     def log_user_out():
         logout = request.middleware_data
         return jsonify(logout)
 
-    # 🔹 GET user’s saved machines (sorted by last used)
+    # GET user’s saved machines (sorted by last used)
     @app.route("/user/machines", methods=['GET'], endpoint='get_user_machines_middleware_endpoint')
     @get_user_machines
     def get_user_machines_endpoint():
         middleware_data = request.middleware_data
         return jsonify(middleware_data), 200 if middleware_data["status"] == "success" else 500
 
-    # 🔹 Basic session testing route
+    # Basic session testing route
     @app.route('/basic-page', methods=['GET'], endpoint='basic-page-endpoint')
     def basic_page():
         sess = session.get('user_session')
-        print(f"✅ Found user session: {sess}")
+        print(f"Found user session: {sess}")
         return jsonify({"message": "Success", "session": sess}), 200
 
     return app

@@ -105,6 +105,7 @@ struct ProfilePage: View {
             if success {
                 isLoggedIn = false  // Clear local session
                 UserDefaults.standard.removeObject(forKey: "isLoggedIn")
+                UserDefaults.standard.removeObject(forKey: "authToken")
                 UserDefaults.standard.synchronize()
 
                 // Send logout event

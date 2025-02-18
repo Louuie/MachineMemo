@@ -233,17 +233,7 @@ class MachineAPI {
         // Use the shared session
         let (data, response) = try await session.data(for: request)
         
-        // 🔹 Debug: Print Cookies
-        if let httpResponse = response as? HTTPURLResponse {
-            print("Response Status:", httpResponse.statusCode)
-            if let cookies = session.configuration.httpCookieStorage?.cookies {
-                for cookie in cookies {
-                    print("🍪 Stored Cookie:", cookie)
-                }
-            }
-        }
-        
-        // 🔹 Debug: Print Raw JSON
+        // Debug: Print Raw JSON
         print("Raw Response:", String(data: data, encoding: .utf8) ?? "Invalid Data")
         let storedToken = UserDefaults.standard.string(forKey: "authToken")
         print("Using Auth Token:", storedToken ?? "None")
@@ -269,9 +259,9 @@ class MachineAPI {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        request.setValue("include", forHTTPHeaderField: "credentials")  // Ensure cookies are included
+        //request.setValue("include", forHTTPHeaderField: "credentials")  // Ensure cookies are included
         request.setValue("Bearer \(authToken ?? "")", forHTTPHeaderField: "Authorization")
-        let (data, _) = try await session.data(from: url)
+        let (data, _) = try await session.data(for: request)
         
         // Debugging: Print raw JSON data
         print("Raw Response:", String(data: data, encoding: .utf8) ?? "Invalid Data")

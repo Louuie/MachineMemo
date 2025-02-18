@@ -1,13 +1,9 @@
 from flask import Flask, request, jsonify, redirect, session
 from flask_cors import CORS
-from middleware import (
-    get_user_settings, get_machines, add_machines, 
-    login_with_google, callback, user, logout, get_user_machines, add_machine_settings, update_setting, validate_token
-)
+from middleware.auth import login_with_google, callback, logout, user, validate_token
+from middleware.db import get_machines, get_user_machines, get_user_settings, update_setting, add_machine_settings, add_machines
 from datetime import timedelta
 import os
-import redis
-
 def create_app():
     app = Flask(__name__)
 
@@ -19,7 +15,6 @@ def create_app():
         SESSION_PERMANENT=True,
         SESSION_USE_SIGNER=True,
         SESSION_KEY_PREFIX="machine_memo_",
-        SESSION_REDIS=redis.StrictRedis(host="localhost", port=6379, db=0, decode_responses=False)
     )
 
     # Configure CORS

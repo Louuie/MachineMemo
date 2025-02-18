@@ -9,6 +9,7 @@ import SwiftUI
 import AuthenticationServices
 
 struct LoginPage: View {
+    @Environment(\.colorScheme) var colorScheme
     @AppStorage("authToken") private var authToken: String = ""
     @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
     @State private var errorMessage: String = ""
@@ -17,121 +18,120 @@ struct LoginPage: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 30) {
-                // Logo and Title
-                VStack(spacing: 20) {
-                    Image(systemName: "m.circle.fill")
+                
+                VStack(spacing: 10) {
+                    Image(colorScheme == .dark ? "AppImage_Light" : "AppImage_Dark")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 100, height: 100)
-                        .foregroundColor(.blue)
                     
                     Text("MachineMemo")
-                        .font(.system(size: 32, weight: .bold))
+                        .font(.largeTitle.bold())
                         .foregroundColor(.primary)
                 }
-                .padding(.top, 100)
+                .padding(.top, 80)
                 
                 Spacer()
                 
-                // Login Button
                 Button(action: {
                     isLoading = true
                     performLogin()
                 }) {
                     HStack {
-                        Image(systemName: "person.fill")
-                            .foregroundColor(.white)
+                        Image("g_logo")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 22, height: 22)
                         
                         if isLoading {
                             ProgressView()
                                 .tint(.white)
                         } else {
                             Text("Sign in with Google")
-                                .foregroundColor(.white)
                                 .font(.headline)
+                                .foregroundColor(.primary)
                         }
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.blue)
-                    .cornerRadius(10)
-                    .shadow(radius: 3)
+                    .background(Color(.systemGray6)) // Lighter background for contrast
+                    .cornerRadius(12)
+                    .shadow(color: .gray.opacity(0.2), radius: 3, x: 0, y: 2)
                 }
                 .padding(.horizontal, 40)
+                .disabled(isLoading)
+                .opacity(isLoading ? 0.7 : 1.0)
+                .animation(.easeInOut(duration: 0.2), value: isLoading)
                 
                 if !errorMessage.isEmpty {
                     Text(errorMessage)
                         .foregroundColor(.red)
                         .font(.caption)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 30)
                 }
                 
                 Spacer()
+                    .padding()
+                    .background(Color(.systemBackground)) // Adapts to dark mode
             }
-            .padding()
         }
     }
 
+    // 🔹 Perform Login using ASWebAuthenticationSession
     private func performLogin() {
-        // Your backend's Google OAuth endpoint
         let authURL = URL(string: "https://machinememo-5791cb7039d5.herokuapp.com/google/login")!
-        
-        // Custom URL scheme for redirect (e.g., your-app://oauth-callback)
-        let callbackScheme = "machinememo" // Match your app's URL scheme
-        
+        let callbackScheme = "machinememo"
+
         let session = ASWebAuthenticationSession(
             url: authURL,
             callbackURLScheme: callbackScheme
         ) { callbackURL, error in
             isLoading = false
-            
+
             if let error = error {
                 errorMessage = "Login failed: \(error.localizedDescription)"
                 return
             }
-            
+
             guard let callbackURL = callbackURL else {
                 errorMessage = "Invalid callback URL"
                 return
             }
-            
-            // Handle the callback URL (e.g., verify login success)
+
             handleDeepLink(callbackURL)
         }
-        
-        // Use the coordinator to provide the presentation context
+
         let coordinator = Coordinator()
         session.prefersEphemeralWebBrowserSession = false
         session.presentationContextProvider = coordinator
         session.start()
     }
 
+    // 🔹 Handle OAuth Callback
     private func handleDeepLink(_ url: URL) {
         print("📱 Received URL:", url.absoluteString)
-        
-        // Print all URL components for debugging
-        if let components = URLComponents(url: url, resolvingAgainstBaseURL: true) {
-            print("📍 URL Components:")
-            print("- Query Items:", components.queryItems ?? "None")
+
+        if let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+           let token = components.queryItems?.first(where: { $0.name == "access_token" })?.value {
             
-            if let token = components.queryItems?.first(where: { $0.name == "access_token" })?.value {
-                print("Found Token:", token)
-                
-                authToken = token  // Save to @AppStorage
-                UserDefaults.standard.set(token, forKey: "authToken")  // Save persistently
-                UserDefaults.standard.synchronize()  // Ensure it writes immediately
+            print("✅ Found Token:", token)
+            
+            authToken = token
+            UserDefaults.standard.set(token, forKey: "authToken")
+            UserDefaults.standard.synchronize()
 
-                // 🔍 Verify Token Storage
-                let storedToken = UserDefaults.standard.string(forKey: "authToken")
-                print("Stored Auth Token in UserDefaults:", storedToken ?? "None")
-            }
+            print("Stored Auth Token:", UserDefaults.standard.string(forKey: "authToken") ?? "None")
 
+            isLoggedIn = true
+            NotificationCenter.default.post(name: .loginSuccess, object: nil)
+        } else {
+            errorMessage = "Failed to retrieve token."
         }
-        
-        // Rest of your existing code...
-        isLoggedIn = true
-        NotificationCenter.default.post(name: .loginSuccess, object: nil)
     }
 }
+
+
 
 // MARK: - Coordinator Class
 class Coordinator: NSObject, ASWebAuthenticationPresentationContextProviding {

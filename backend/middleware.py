@@ -15,13 +15,13 @@ def get_user_settings(func):
             request.middleware_data = {"status": "error", "message": "No authorization token provided"}
             return func(*args, **kwargs)
 
-        # 🔹 Extract Bearer Token
+        #   Extract Bearer Token
         token = auth_header.replace("Bearer ", "").strip()
         if not token:
             request.middleware_data = {"status": "error", "message": "Invalid authorization token"}
             return func(*args, **kwargs)
 
-        # 🔹 Get the User ID from Supabase Session
+        #   Get the User ID from Supabase Session
         auth_response = supabase.auth.get_user(token)
         if not auth_response or not auth_response.user:
             request.middleware_data = {"status": "error", "message": "User authentication failed"}
@@ -65,7 +65,7 @@ from flask import request
 def update_setting(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        # 🔹 Extract Machine ID & Setting ID
+        #   Extract Machine ID & Setting ID
         machine_id = request.args.get("machine_id")
         setting_id = request.args.get("setting_id")
         updated_settings = request.get_json()
@@ -74,13 +74,13 @@ def update_setting(func):
         print(f"DEBUG: Received setting_id: {setting_id}")
         print(f"DEBUG: Received updated settings: {updated_settings}")
 
-        # 🔹 Validate Request Data
+        #   Validate Request Data
         if not setting_id:
             return {"status": "error", "message": "Missing setting_id in request"}, 400
         if not updated_settings:
             return {"status": "error", "message": "Missing updated settings in request"}, 400
 
-        # 🔹 Extract Authorization Token
+        #   Extract Authorization Token
         auth_header = request.headers.get('Authorization')
         if not auth_header:
             return {"status": "error", "message": "No authorization token provided"}, 401
@@ -89,7 +89,7 @@ def update_setting(func):
         if not token:
             return {"status": "error", "message": "Invalid authorization token"}, 401
 
-        # 🔹 Authenticate User with Supabase
+        #   Authenticate User with Supabase
         auth_response = supabase.auth.get_user(token)
         if not auth_response or not auth_response.user:
             return {"status": "error", "message": "User authentication failed"}, 401
@@ -98,14 +98,14 @@ def update_setting(func):
         print(f"DEBUG: Authenticated user_id: {user_id}")
 
         try:
-            # 🔹 Check if Setting Exists
+            #   Check if Setting Exists
             current_settings = supabase.table("settings").select("*").eq("id", setting_id).eq("user_id", user_id).execute()
             if len(current_settings.data) == 0:
                 return {"status": "error", "message": "Setting not found or unauthorized!"}, 404
 
             existing_machine_id = current_settings.data[0].get("machine_id")
 
-            # 🔹 Format Settings JSON Correctly
+            #   Format Settings JSON Correctly
             formatted_settings = {
                 "settings": {
                     "settings": updated_settings,
@@ -116,15 +116,15 @@ def update_setting(func):
 
             print(f"DEBUG: Formatted settings payload: {formatted_settings}")
 
-            # 🔹 Update in Supabase (RLS ensures only the owner can modify)
+            #   Update in Supabase (RLS ensures only the owner can modify)
             data = supabase.table("settings").update(formatted_settings).eq("id", setting_id).eq("user_id", user_id).execute()
             print(f"DEBUG: Supabase response: {data}")
 
-            # 🔹 Ensure Update Worked
+            #   Ensure Update Worked
             if not data.data:
                 return {"status": "error", "message": "Failed to update settings!"}, 500
 
-            # 🔹 Store Response in Middleware Data
+            #   Store Response in Middleware Data
             request.middleware_data = {
                 "status": "success",
                 "message": "Successfully updated machine setting",
@@ -145,7 +145,7 @@ def get_machines(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         machine_type = request.args.get("type")
-                # 🔹 Extract Authorization Token
+                #   Extract Authorization Token
         auth_header = request.headers.get('Authorization')
         if not auth_header:
             return {"status": "error", "message": "No authorization token provided"}, 401
@@ -154,7 +154,7 @@ def get_machines(func):
         if not token:
             return {"status": "error", "message": "Invalid authorization token"}, 401
 
-        # 🔹 Authenticate User with Supabase
+        #   Authenticate User with Supabase
         auth_response = supabase.auth.get_user(token)
         if not auth_response or not auth_response.user:
             return {"status": "error", "message": "User authentication failed"}, 401
@@ -186,7 +186,7 @@ def add_machine_settings(func):
         machine_id = request.args.get("machine_id")
         user_session = session.get('user_session')      
         settings = request.get_json()
-        # 🔹 Extract Authorization Token
+        #   Extract Authorization Token
         auth_header = request.headers.get('Authorization')
         if not auth_header:
             return {"status": "error", "message": "No authorization token provided"}, 401
@@ -195,7 +195,7 @@ def add_machine_settings(func):
         if not token:
             return {"status": "error", "message": "Invalid authorization token"}, 401
 
-        # 🔹 Get the User ID from Supabase Session
+        #   Get the User ID from Supabase Session
         auth_response = supabase.auth.get_user(token)
         if not auth_response or not auth_response.user:
             request.middleware_data = {"status": "error", "message": "User authentication failed"}
@@ -330,6 +330,20 @@ def callback(func):
 def logout(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
+        # Extract Authorization Token
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            return {"status": "error", "message": "No authorization token provided"}, 401
+        
+        token = auth_header.split("Bearer ")[-1].strip()
+        if not token:
+            return {"status": "error", "message": "Invalid authorization token"}, 401
+
+        #   Get the User ID from Supabase Session
+        auth_response = supabase.auth.get_user(token)
+        if not auth_response or not auth_response.user:
+            request.middleware_data = {"status": "error", "message": "User authentication failed"}
+            return func(*args, **kwargs)
         try:
             supabase.auth.sign_out()
             session.pop('user_session', None)
@@ -376,19 +390,19 @@ def get_user_machines(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         try:
-            # 🔹 Get the Auth Token from the Request Header
+            #   Get the Auth Token from the Request Header
             auth_header = request.headers.get("Authorization")
             if not auth_header:
                 request.middleware_data = {"status": "error", "message": "No authorization token provided"}
                 return func(*args, **kwargs)
 
-            # 🔹 Extract Bearer Token
+            #   Extract Bearer Token
             token = auth_header.split("Bearer ")[-1].strip()
             if not token:
                 request.middleware_data = {"status": "error", "message": "Invalid authorization token"}
                 return func(*args, **kwargs)
 
-            # 🔹 Get the User ID from Supabase Session
+            #   Get the User ID from Supabase Session
             auth_response = supabase.auth.get_user(token)
             if not auth_response or not auth_response.user:
                 request.middleware_data = {"status": "error", "message": "User authentication failed"}
@@ -397,7 +411,7 @@ def get_user_machines(func):
             user_id = auth_response.user.id
             print(f"✅ Authenticated User ID: {user_id}")
 
-            # 🔹 Fetch User-Specific Settings (RLS filters data automatically)
+            #   Fetch User-Specific Settings (RLS filters data automatically)
             settings_response = supabase.table("settings").select("machine_id, last_used").eq("user_id", user_id).order("last_used", desc=True).execute()
             settings = settings_response.data
 
@@ -405,7 +419,7 @@ def get_user_machines(func):
                 request.middleware_data = {"status": "success", "data": []}
                 return func(*args, **kwargs)
 
-            # 🔹 Get Unique Machine IDs
+            #   Get Unique Machine IDs
             seen = set()
             machine_ids = [item["machine_id"] for item in settings if item["machine_id"] not in seen and not seen.add(item["machine_id"])]
 
@@ -413,21 +427,21 @@ def get_user_machines(func):
                 request.middleware_data = {"status": "success", "data": []}
                 return func(*args, **kwargs)
 
-            # 🔹 Fetch Machines Owned by User (RLS ensures they belong to the user)
+            #   Fetch Machines Owned by User (RLS ensures they belong to the user)
             machines_response = supabase.table("machines").select("*").in_("id", machine_ids).execute()
             machines = machines_response.data
 
-            # 🔹 Map last_used timestamps to each machine
+            #   Map last_used timestamps to each machine
             last_used_map = {item["machine_id"]: item["last_used"] for item in settings}
 
-            # 🔹 Sort Machines by Last Used Timestamp
+            #   Sort Machines by Last Used Timestamp
             sorted_machines = sorted(
                 machines,
                 key=lambda m: last_used_map.get(m["id"]) or "",
                 reverse=True
             )
 
-            # 🔹 Format Response
+            #   Format Response
             request.middleware_data = {
                 "status": "success",
                 "data": [
@@ -457,7 +471,7 @@ def validate_token(func):
             if not auth_response or not auth_response.user:
                 return jsonify({"status": "error", "message": "Invalid or expired token"}), 401
 
-            request.user = auth_response.user  # 🔹 Attach user to request for later use
+            request.user = auth_response.user  #   Attach user to request for later use
             return func(*args, **kwargs)
 
         except Exception as e:

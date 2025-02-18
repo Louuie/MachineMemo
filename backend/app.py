@@ -113,7 +113,7 @@ def create_app():
     @validate_token
     def auth_validate():
         """Validates token and returns user details"""
-        user = request.user  # 🔹 Retrieve user from request
+        user = request.user  #   Retrieve user from request
 
         return jsonify({
             "status": "success",

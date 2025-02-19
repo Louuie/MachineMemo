@@ -58,8 +58,12 @@ struct MachineListView: View {
                 }
             }
             .navigationTitle("Machines")
-            .task {
-                await loadMachines()
+            .onAppear {
+                if machines.isEmpty {
+                    Task {
+                        await loadMachines()
+                    }
+                }
             }
             .searchable(text: $search)
         }

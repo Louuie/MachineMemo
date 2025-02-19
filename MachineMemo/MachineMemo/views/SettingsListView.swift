@@ -115,8 +115,12 @@ struct SettingsListView: View {
                 }
             }
             .navigationTitle("Settings")
-            .task {
-                await loadSettings()
+            .onAppear {
+                if settings.isEmpty {
+                    Task {
+                        await loadSettings()
+                    }
+                }
             }
         }
     }

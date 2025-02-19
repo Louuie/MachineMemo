@@ -391,7 +391,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MachineMemo/Preview Content\"";
-				DEVELOPMENT_TEAM = MDF3N2T3GE;
+				DEVELOPMENT_TEAM = KL5HT4L6SG;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MachineMemo/Info.plist;
@@ -406,7 +406,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = eliasdandouch.MachineMemo;
+				PRODUCT_BUNDLE_IDENTIFIER = erichurtado.MachineMemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -422,7 +422,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MachineMemo/Preview Content\"";
-				DEVELOPMENT_TEAM = MDF3N2T3GE;
+				DEVELOPMENT_TEAM = KL5HT4L6SG;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MachineMemo/Info.plist;
@@ -437,7 +437,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = eliasdandouch.MachineMemo;
+				PRODUCT_BUNDLE_IDENTIFIER = erichurtado.MachineMemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

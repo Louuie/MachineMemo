@@ -265,12 +265,11 @@ class MachineAPI {
             throw URLError(.badURL)
         }
         let storedToken = UserDefaults.standard.string(forKey: "authToken") ?? ""
-        print("Stored Auth Token Before Request:", storedToken)
+        print("Logout Token", storedToken)
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        request.setValue("include", forHTTPHeaderField: "credentials")  // Ensure cookies are included
-        request.setValue("Bearer \(authToken ?? "")", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(storedToken)", forHTTPHeaderField: "Authorization")
         let (data, _) = try await session.data(from: url)
         
         // Debugging: Print raw JSON data

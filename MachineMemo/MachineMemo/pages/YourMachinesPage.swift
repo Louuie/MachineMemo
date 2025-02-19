@@ -53,8 +53,12 @@ struct YourMachinesPage: View {
                 }
             }
             .navigationTitle("Your Machines")
-            .task {
-                await loadMachines()
+            .onAppear {
+                if machines.isEmpty {
+                    Task {
+                        await loadMachines()
+                    }
+                }
             }
             .searchable(text: $search)
         }

@@ -52,7 +52,7 @@ def callback(func):
 
             print("User authenticated:", session['user_session'])
 
-            return redirect(f"machinememo://callback?access_token={auth_response.session.access_token}")
+            return redirect(f"machinememo://callback?access_token={auth_response.session.access_token}&refresh_token={auth_response.session.refresh_token}")
 
         except Exception as e:
             print(f"Callback Error: {e}")
@@ -142,4 +142,30 @@ def validate_token(func):
         except Exception as e:
             print(f"Token validation failed: {e}")
             return jsonify({"status": "error", "message": "Token expired"}), 401
+    return wrapper
+def refresh_token(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        auth_header = request.headers.get("Authorization")
+        if not auth_header:
+            return jsonify({"status": "error", "message": "No authorization token provided"}), 401
+
+        token = auth_header.split("Bearer ")[-1].strip()
+        if not token:
+            return jsonify({"status": "error", "message": "Invalid authorization token"}), 401
+
+        try:
+            # 🔹 Attempt to refresh session
+            session_data = supabase.auth.refresh_session({"refresh_token": token})
+            new_token = session_data.session.access_token
+            new_refresh_token = session_data.session.refresh_token
+
+            return jsonify({
+                "status": "success",
+                "access_token": new_token,
+                "refresh_token": new_refresh_token
+            })
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 401
+
     return wrapper

@@ -20,9 +20,9 @@ struct SettingsListView: View {
             VStack(alignment: .center, spacing: 8) { // Prev 16
                 // Machine Info Section
                 VStack(spacing: 12) {
-                    Image(systemName: "dumbbell.fill")
-                        .font(.system(size: 40))
-                        .foregroundColor(.blue)
+                    Image(machine.brand)
+                        .resizable()
+                        .frame(width: 70, height: 70)
                     
                     VStack(spacing: 8) {
                         Text(machine.name)

@@ -14,6 +14,7 @@ extension Notification.Name {
 @main
 struct MachineMemoApp: App {
     @AppStorage("authToken") private var authToken: String = ""
+    @AppStorage("refreshToken") private var refreshToken: String = ""
     @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
 
     var body: some Scene {

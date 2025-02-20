@@ -33,7 +33,6 @@ class MachineAPI {
     private let baseURL = "https://machinememo-5791cb7039d5.herokuapp.com"
     var session: URLSession
     
-    @AppStorage("authToken") private var authToken: String?
     
     init() {
         let config = URLSessionConfiguration.default
@@ -69,12 +68,12 @@ class MachineAPI {
         
         // Encode the JSON Data
         let jsonData = try JSONEncoder().encode(machine)
-        
+        let storedToken = UserDefaults.standard.string(forKey: "authToken") ?? ""
         // Create the POST HTTP Request
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(authToken ?? "")", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(storedToken)", forHTTPHeaderField: "Authorization")
         request.httpBody = jsonData
         
         // Send the request and get the actual response
@@ -92,12 +91,12 @@ class MachineAPI {
         guard let url = URL(string: "\(baseURL)/settings?machine_id=\(setting.machine_id)") else {
             throw URLError(.badURL)
         }
-        
+        let storedToken = UserDefaults.standard.string(forKey: "authToken") ?? ""
         let jsonData = try JSONEncoder().encode(setting)
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(authToken ?? "")", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(storedToken)", forHTTPHeaderField: "Authorization")
         request.httpBody = jsonData
         
         let (data, _) = try await session.data(for: request)
@@ -110,7 +109,7 @@ class MachineAPI {
             throw URLError(.badURL)
         }
 
-        // 🔹 Retrieve Token from UserDefaults (like `getUserMachines()`)
+        // Retrieve Token from UserDefaults (like `getUserMachines()`)
         let storedToken = UserDefaults.standard.string(forKey: "authToken") ?? ""
         print("Stored Auth Token Before Request:", storedToken)
 
@@ -143,30 +142,30 @@ class MachineAPI {
     
     
     
-    func loginWithGoogle() {
-        // Your backend's Google OAuth endpoint
-        let authURL = URL(string: "http://192.168.1.5:5001/google/login")!
-        
-        // Custom URL scheme for redirect (e.g., your-app://oauth-callback)
-        let callbackScheme = "yourappscheme" // Match your app's URL scheme
-        
-        let session = ASWebAuthenticationSession(
-            url: authURL,
-            callbackURLScheme: callbackScheme
-        ) { callbackURL, error in
-            guard error == nil, let _ = callbackURL else {
-                print("Login failed: \(error?.localizedDescription ?? "Unknown error")")
-                return
-            }
-            
-            // Login succeeded! Cookies are already in Safari's shared storage.
-            NotificationCenter.default.post(name: .loginSuccess, object: nil)
-        }
-        
-        // Required for iOS 13+
-        //session.presentationContextProvider = self
-        session.start()
-    }
+//    func loginWithGoogle() {
+//        // Your backend's Google OAuth endpoint
+//        let authURL = URL(string: "http://192.168.1.5:5001/google/login")!
+//        
+//        // Custom URL scheme for redirect (e.g., your-app://oauth-callback)
+//        let callbackScheme = "yourappscheme" // Match your app's URL scheme
+//        
+//        let session = ASWebAuthenticationSession(
+//            url: authURL,
+//            callbackURLScheme: callbackScheme
+//        ) { callbackURL, error in
+//            guard error == nil, let _ = callbackURL else {
+//                print("Login failed: \(error?.localizedDescription ?? "Unknown error")")
+//                return
+//            }
+//            
+//            // Login succeeded! Cookies are already in Safari's shared storage.
+//            NotificationCenter.default.post(name: .loginSuccess, object: nil)
+//        }
+//        
+//        // Required for iOS 13+
+//        //session.presentationContextProvider = self
+//        session.start()
+//    }
     
     func updateSetting(settingId: Int, updatedSettings: [String: String], machine_id: Int) async throws -> Setting {
         let url = URL(string: "\(baseURL)/edit?setting_id=\(settingId)")!
@@ -223,20 +222,18 @@ class MachineAPI {
         guard let url = URL(string: "\(baseURL)/user") else {
             throw URLError(.badURL)
         }
-        print("Making sure we got the token in the machineAPI \(authToken ?? "")")
+        let storedToken = UserDefaults.standard.string(forKey: "authToken") ?? ""
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue("include", forHTTPHeaderField: "credentials")  // Ensure cookies are included
-        request.setValue("Bearer \(authToken ?? "")", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(storedToken)", forHTTPHeaderField: "Authorization")
         
         // Use the shared session
         let (data, response) = try await session.data(for: request)
         
         // Debug: Print Raw JSON
         print("Raw Response:", String(data: data, encoding: .utf8) ?? "Invalid Data")
-        let storedToken = UserDefaults.standard.string(forKey: "authToken")
-        print("Using Auth Token:", storedToken ?? "None")
         
         
         // Decode JSON response
@@ -260,7 +257,7 @@ class MachineAPI {
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         //request.setValue("include", forHTTPHeaderField: "credentials")  // Ensure cookies are included
-        request.setValue("Bearer \(authToken ?? "")", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(storedToken)", forHTTPHeaderField: "Authorization")
         let (data, _) = try await session.data(for: request)
         
         // Debugging: Print raw JSON data

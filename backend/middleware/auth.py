@@ -155,7 +155,7 @@ def refresh_token(func):
             return jsonify({"status": "error", "message": "Invalid authorization token"}), 401
 
         try:
-            # 🔹 Attempt to refresh session
+            # Attempt to refresh session
             session_data = supabase.auth.refresh_session({"refresh_token": token})
             new_token = session_data.session.access_token
             new_refresh_token = session_data.session.refresh_token

@@ -104,7 +104,7 @@ def create_app():
         sess = session.get('user_session')
         print(f"Found user session: {sess}")
         return jsonify({"message": "Success", "session": sess}), 200
-    @app.route("/auth/validate", methods=["POST"])
+    @app.route("/auth/validate", methods=['GET'])
     @validate_token
     def auth_validate():
         """Validates token and returns user details"""

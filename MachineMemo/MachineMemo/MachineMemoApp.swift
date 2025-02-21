@@ -21,7 +21,7 @@ struct MachineMemoApp: App {
     var body: some Scene {
         WindowGroup {
             if isLoading {
-                SpinnerView()
+                //SpinnerView()
             } else {
                 ContentView()
                     .onAppear {
@@ -134,7 +134,7 @@ struct ContentView: View {
     var body: some View {
         Group {
             if isLoading {
-                SpinnerView()
+                ProgressView()
                     .onAppear {
                         Task {
                             await checkTokenStatus()

@@ -31,7 +31,7 @@ struct MachineListView: View {
         NavigationStack {
             VStack {
                 if isLoading {
-                    SpinnerView()
+                    ProgressView()
                 } else if let errorMessage = errorMessage {
                     Text("Error: \(errorMessage)")
                         .foregroundColor(.red)

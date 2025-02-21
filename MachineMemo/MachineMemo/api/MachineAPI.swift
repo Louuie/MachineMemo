@@ -317,19 +317,26 @@ class MachineAPI {
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
-        let (_, response) = try await session.data(for: request)
+        let (data, response) = try await session.data(for: request)
 
         if let httpResponse = response as? HTTPURLResponse {
+            print("🔹 HTTP Status Code: \(httpResponse.statusCode)")
+            print("🔹 Response Headers: \(httpResponse.allHeaderFields)")
+
+            let responseString = String(data: data, encoding: .utf8) ?? "❌ Could not decode response"
+            print("🔹 Raw Response Body: \(responseString)")
+
             if httpResponse.statusCode == 200 {
                 return true
             } else if httpResponse.statusCode == 401 {
-                print("Token expired")
+                print("❌ Token expired")
                 return false
             }
         }
 
         throw URLError(.cannotDecodeContentData)
     }
+
 
 }
 

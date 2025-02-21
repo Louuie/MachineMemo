@@ -156,9 +156,11 @@ def refresh_token(func):
 
         try:
             # Attempt to refresh session
-            session_data = supabase.auth.refresh_session({"refresh_token": token})
+            print("before passing token?")
+            session_data = supabase.auth.refresh_session(token)
             new_token = session_data.session.access_token
             new_refresh_token = session_data.session.refresh_token
+            print(session_data)
 
             return jsonify({
                 "status": "success",

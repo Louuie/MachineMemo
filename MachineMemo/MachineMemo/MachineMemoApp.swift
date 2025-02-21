@@ -21,7 +21,7 @@ struct MachineMemoApp: App {
     var body: some Scene {
         WindowGroup {
             if isLoading {
-                ProgressView("Refreshing your session...")
+                SpinnerView()
             } else {
                 ContentView()
                     .onAppear {
@@ -134,7 +134,7 @@ struct ContentView: View {
     var body: some View {
         Group {
             if isLoading {
-                ProgressView("Checking session...")  // ⏳ Show loading while checking token
+                SpinnerView()
                     .onAppear {
                         Task {
                             await checkTokenStatus()

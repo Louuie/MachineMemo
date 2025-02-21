@@ -30,7 +30,7 @@ struct Update: Decodable, Identifiable {
 
 class MachineAPI {
     static let shared = MachineAPI()
-    private let baseURL = "https://machinememo-5791cb7039d5.herokuapp.com"
+    private let baseURL = "https://machinememo.me"
     var session: URLSession
     
     

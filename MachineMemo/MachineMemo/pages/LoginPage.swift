@@ -91,7 +91,7 @@ struct LoginPage: View {
 
     // Perform Login using ASWebAuthenticationSession
     private func performLogin() {
-        let authURL = URL(string: "https://machinememo-5791cb7039d5.herokuapp.com/google/login")!
+        let authURL = URL(string: "https://machinememo.me/google/login")!
         let callbackScheme = "machinememo"
 
         let session = ASWebAuthenticationSession(

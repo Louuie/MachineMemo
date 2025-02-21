@@ -53,7 +53,7 @@ struct MachineMemoApp: App {
 
     // Validates the token
     private func validateToken() async {
-        guard let url = URL(string: "https://machinememo-5791cb7039d5.herokuapp.com/auth/validate") else { return }
+        guard let url = URL(string: "https://machinememo.me/auth/validate") else { return }
         guard !authToken.isEmpty else {
             print("No token found, forcing logout.")
             isLoggedIn = false
@@ -90,7 +90,7 @@ struct MachineMemoApp: App {
         }
     }
     private func refreshUserToken() async {
-        guard let url = URL(string: "https://machinememo-5791cb7039d5.herokuapp.com/auth/refresh") else { return }
+        guard let url = URL(string: "https://machinememo.me/auth/refresh") else { return }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"

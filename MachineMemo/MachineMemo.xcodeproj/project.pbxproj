@@ -6,11 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		646F26C82D6828BF00188B0F /* dumbell_spinner.lottie in Resources */ = {isa = PBXBuildFile; fileRef = 646F26C72D6828BF00188B0F /* dumbell_spinner.lottie */; };
-		646F26CB2D6829C100188B0F /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 646F26CA2D6829C100188B0F /* Lottie */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXContainerItemProxy section */
 		64E84E7E2D2B82F80081D60C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,7 +24,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		646F26C72D6828BF00188B0F /* dumbell_spinner.lottie */ = {isa = PBXFileReference; lastKnownFileType = file; path = dumbell_spinner.lottie; sourceTree = "<group>"; };
 		64E84E6D2D2B82F70081D60C /* MachineMemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MachineMemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		64E84E7D2D2B82F80081D60C /* MachineMemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MachineMemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		64E84E872D2B82F80081D60C /* MachineMemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MachineMemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -61,7 +55,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				646F26CB2D6829C100188B0F /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,7 +78,6 @@
 		64E84E642D2B82F70081D60C = {
 			isa = PBXGroup;
 			children = (
-				646F26C72D6828BF00188B0F /* dumbell_spinner.lottie */,
 				64E84E6F2D2B82F70081D60C /* MachineMemo */,
 				64E84E6E2D2B82F70081D60C /* Products */,
 			);
@@ -121,7 +113,6 @@
 			);
 			name = MachineMemo;
 			packageProductDependencies = (
-				646F26CA2D6829C100188B0F /* Lottie */,
 			);
 			productName = MachineMemo;
 			productReference = 64E84E6D2D2B82F70081D60C /* MachineMemo.app */;
@@ -199,9 +190,6 @@
 			);
 			mainGroup = 64E84E642D2B82F70081D60C;
 			minimizedProjectReferenceProxies = 1;
-			packageReferences = (
-				646F26C92D6829C100188B0F /* XCRemoteSwiftPackageReference "lottie-ios" */,
-			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 64E84E6E2D2B82F70081D60C /* Products */;
 			projectDirPath = "";
@@ -219,7 +207,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				646F26C82D6828BF00188B0F /* dumbell_spinner.lottie in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -419,7 +406,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = eliasdandouch.MachineMemo;
+				PRODUCT_BUNDLE_IDENTIFIER = Louie.MachineMemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -450,7 +437,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = eliasdandouch.MachineMemo;
+				PRODUCT_BUNDLE_IDENTIFIER = Louie.MachineMemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -566,25 +553,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		646F26C92D6829C100188B0F /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/airbnb/lottie-ios";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.5.1;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		646F26CA2D6829C100188B0F /* Lottie */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 646F26C92D6829C100188B0F /* XCRemoteSwiftPackageReference "lottie-ios" */;
-			productName = Lottie;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 64E84E652D2B82F70081D60C /* Project object */;
 }

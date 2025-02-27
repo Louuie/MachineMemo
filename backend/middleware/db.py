@@ -2,6 +2,7 @@ from functools import wraps
 from flask import request, jsonify, session, redirect
 from supabase_client import supabase  # Use the shared Supabase client
 import datetime
+from werkzeug.utils import secure_filename
 def get_user_settings(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -218,45 +219,71 @@ def add_machine_settings(func):
     return wrapper
 
 
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 def add_machines(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         auth_header = request.headers.get('Authorization')
-        print(f"auth_header {auth_header}")
         if not auth_header or not auth_header.startswith('Bearer '):
-            return jsonify({'error': 'No token provided'}), 401
+            return jsonify({'status': 'error', 'message': 'No token provided'}), 401
         
         token = auth_header.split(' ')[1]
 
-
-        name = request.args.get("name")
-        machine_type = request.args.get("type")
-        brand = request.args.get("brand")
+        # Extract form data
+        name = request.form.get("name")
+        machine_type = request.form.get("type")
+        brand = request.form.get("brand")
 
         if not name or not machine_type or not brand:
             return jsonify({"status": "error", "message": "Missing required machine details"}), 400
 
-        try:
-            user_response = supabase.auth.get_user(token)
-            user_id = user_response.user.id  # Ensure the request is made for the correct user
+        # Check for image upload
+        image_url = None
+        if "image" in request.files:
+            file = request.files["image"]
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file_path = f"machine_images/{filename}"
+                
+                # Upload to Supabase Storage
+                try:
+                    supabase.storage.from_("machine_images").upload(file_path, file)
+                    image_url = f"{supabase.auth.api_url}/storage/v1/object/public/machine_images/{filename}"
+                except Exception as e:
+                    return jsonify({"status": "error", "message": f"Image upload failed: {str(e)}"}), 500
+            else:
+                return jsonify({"status": "error", "message": "Invalid file type"}), 400
 
+        try:
+            # Get user ID from Supabase session
+            user_response = supabase.auth.get_user(token)
+            user_id = user_response.user.id
+
+            # Insert into Supabase database
             data = supabase.table("machines").insert({
                 "name": name,
                 "type": machine_type,
                 "brand": brand,
-                "user_id": user_id  # Associate machine with the logged-in user
+                "user_id": user_id,
+                "image_url": image_url  # Save uploaded image URL if provided
             }).execute()
 
             request.middleware_data = {
                 "status": "success",
-                "message": "Machine added",
-                "id": data.data[0]["id"]
+                "message": "Machine added successfully",
+                "id": data.data[0]["id"],
+                "image_url": image_url
             }
 
         except Exception as e:
             request.middleware_data = {"status": "error", "message": str(e)}
 
         return func(*args, **kwargs)
+
     return wrapper
 
 

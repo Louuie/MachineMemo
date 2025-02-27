@@ -61,31 +61,47 @@ class MachineAPI {
         return response.data
     }
     
-    func addMachine(machine: Machine) async throws -> AddMachine {
-        guard let url = URL(string: "\(baseURL)/machines?name=\(machine.name)&type=User&brand=\(machine.brand)") else {
+    func addMachine(machine: Machine, image: UIImage?) async throws -> AddMachine {
+        guard let url = URL(string: "\(baseURL)/machines") else {
             throw URLError(.badURL)
         }
-        
-        // Encode the JSON Data
-        let jsonData = try JSONEncoder().encode(machine)
-        let storedToken = UserDefaults.standard.string(forKey: "authToken") ?? ""
-        // Create the POST HTTP Request
+
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(storedToken)", forHTTPHeaderField: "Authorization")
-        request.httpBody = jsonData
         
-        // Send the request and get the actual response
-        let (data, _) = try await session.data(for: request)
+        let boundary = UUID().uuidString
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+        var body = Data()
+
+        // Add name field
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"name\"\r\n\r\n".data(using: .utf8)!)
+        body.append("\(machine.name)\r\n".data(using: .utf8)!)
+
+        // Add brand field
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"brand\"\r\n\r\n".data(using: .utf8)!)
+        body.append("\(machine.brand)\r\n".data(using: .utf8)!)
+
+        // Add image if available
+        if let image = image, let imageData = image.jpegData(compressionQuality: 0.8) {
+            let filename = "machine_\(UUID().uuidString).jpg"
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"image\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
+            body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+            body.append(imageData)
+            body.append("\r\n".data(using: .utf8)!)
+        }
+
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
         
-        // Print it
-        print(String(data: data, encoding: .utf8) ?? "Invalid Data")
-        
-        // Decode the response and return it
-        let response = try JSONDecoder().decode(AddMachine.self, from: data)
-        return response
+        request.httpBody = body
+
+        let (data, _) = try await URLSession.shared.data(for: request)
+        return try JSONDecoder().decode(AddMachine.self, from: data)
     }
+
     
     func addSetting(setting: Setting) async throws -> AddSetting {
         guard let url = URL(string: "\(baseURL)/settings?machine_id=\(setting.machine_id)") else {

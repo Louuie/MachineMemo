@@ -217,50 +217,62 @@ def add_machine_settings(func):
             request.middleware_data = {"status": "error", "message": str(e)}
         return func(*args, **kwargs)
     return wrapper
-
-
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
+# Function to check if file extension is valid
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def add_machines(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
+        print("🔹 Entering add_machines middleware")
+
+        # Extract Authorization Token
         auth_header = request.headers.get('Authorization')
+
         if not auth_header or not auth_header.startswith('Bearer '):
             return jsonify({'status': 'error', 'message': 'No token provided'}), 401
         
         token = auth_header.split(' ')[1]
 
         # Extract form data
-        name = request.form.get("name")
-        machine_type = request.form.get("type")
-        brand = request.form.get("brand")
+        name = request.args.get("name")
+        machine_type = request.args.get("type")
+        brand = request.args.get("brand")
 
-        if not name or not machine_type or not brand:
-            return jsonify({"status": "error", "message": "Missing required machine details"}), 400
 
-        # Check for image upload
+        # Image upload handling
         image_url = None
         if "image" in request.files:
             file = request.files["image"]
+            print(f"🔹 Image file detected: {file.filename}")
+
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                file_path = f"machine_images/{filename}"
-                
-                # Upload to Supabase Storage
+                file_path = filename  # No need to add "machine_images/"
+
                 try:
-                    supabase.storage.from_("machine_images").upload(file_path, file)
-                    image_url = f"{supabase.auth.api_url}/storage/v1/object/public/machine_images/{filename}"
+                    print(f"🔹 Reading file contents into memory...")
+                    file_data = file.read()  # Read the file as bytes
+                    
+                    print(f"🔹 Uploading file to Supabase: {file_path}")
+                    supabase.storage.from_("machine_images").upload(file_path, file_data)
+
+                    image_url = f"https://fkxkbsheufatzhdsurhs.supabase.co/storage/v1/object/public/machine_images/{filename}"
                 except Exception as e:
                     return jsonify({"status": "error", "message": f"Image upload failed: {str(e)}"}), 500
             else:
                 return jsonify({"status": "error", "message": "Invalid file type"}), 400
 
+
+        # Get user ID from Supabase session
         try:
-            # Get user ID from Supabase session
             user_response = supabase.auth.get_user(token)
+
+            if not user_response or not user_response.user:
+                return jsonify({"status": "error", "message": "User authentication failed"}), 401
+            
             user_id = user_response.user.id
 
             # Insert into Supabase database
@@ -272,6 +284,7 @@ def add_machines(func):
                 "image_url": image_url  # Save uploaded image URL if provided
             }).execute()
 
+
             request.middleware_data = {
                 "status": "success",
                 "message": "Machine added successfully",
@@ -282,9 +295,11 @@ def add_machines(func):
         except Exception as e:
             request.middleware_data = {"status": "error", "message": str(e)}
 
+        print("🔹 Exiting add_machines middleware")
         return func(*args, **kwargs)
 
     return wrapper
+
 
 
 
@@ -311,7 +326,6 @@ def get_user_machines(func):
                 return func(*args, **kwargs)
 
             user_id = auth_response.user.id
-            print(f"✅ Authenticated User ID: {user_id}")
 
             #   Fetch User-Specific Settings (RLS filters data automatically)
             settings_response = supabase.table("settings").select("machine_id, last_used").eq("user_id", user_id).order("last_used", desc=True).execute()
@@ -347,7 +361,7 @@ def get_user_machines(func):
             request.middleware_data = {
                 "status": "success",
                 "data": [
-                    {"id": machine["id"], "name": machine["name"], "brand": machine["brand"], "type": machine["type"]}
+                    {"id": machine["id"], "name": machine["name"], "brand": machine["brand"], "type": machine["type"], "image_url": machine["image_url"]}
                     for machine in sorted_machines
                 ]
             }

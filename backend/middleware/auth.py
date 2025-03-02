@@ -2,7 +2,7 @@ from functools import wraps
 from flask import request, jsonify, session, redirect
 from supabase_client import supabase  # Use the shared Supabase client
 # Base URL for OAuth redirect
-BASE_URL = "https://machinememo.me"
+BASE_URL = "http://192.168.1.31:5001"
 def login_with_google(func):
     @wraps(func)
     def wrapper(*args, **kwargs):

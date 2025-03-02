@@ -48,7 +48,7 @@ struct YourMachinesPage: View {
                         ScrollView {
                             LazyVStack(spacing: 12) {
                                 ForEach(filteredMachines) { machine in
-                                    MachineCard(machine: machine, machine_icon: machine.brand)
+                                    MachineCard(machine: machine)
                                 }
                             }
                             .padding(.horizontal)
@@ -82,16 +82,46 @@ struct YourMachinesPage: View {
 // MARK: - Machine Card (Modern UI)
 struct MachineCard: View {
     var machine: Machine
-    var machine_icon: String
 
     var body: some View {
         NavigationLink(destination: MachineDetailsView(machine: machine)) {
             HStack(spacing: 15) {
-                Image(machine_icon) // Placeholder for machine icon
-                    .resizable()
-                    .frame(width: 40, height: 40)
-                    .foregroundColor(.blue)
-                
+                // Load image from `image_url`, or use a default placeholder
+                if let imageUrl = machine.image_url, let url = URL(string: imageUrl) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                                .frame(width: 40, height: 40)
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 40, height: 40)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                        case .failure:
+                            Image(systemName: "dumbbell")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 40, height: 40)
+                                .foregroundColor(.gray)
+                        @unknown default:
+                            Image(systemName: "dumbbell")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 40, height: 40)
+                                .foregroundColor(.gray)
+                        }
+                    }
+                } else {
+                    // Use placeholder image if `image_url` is nil
+                    Image(systemName: "dumbbell")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 40, height: 40)
+                        .foregroundColor(.gray)
+                }
+
                 VStack(alignment: .leading) {
                     Text(machine.name)
                         .font(.headline)
@@ -111,6 +141,7 @@ struct MachineCard: View {
         }
     }
 }
+
 
 // MARK: - Empty State View
 struct EmptyStateView: View {

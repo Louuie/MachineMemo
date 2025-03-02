@@ -30,7 +30,7 @@ struct Update: Decodable, Identifiable {
 
 class MachineAPI {
     static let shared = MachineAPI()
-    private let baseURL = "https://machinememo.me"
+    private let baseURL = "http://192.168.1.31:5001"
     var session: URLSession
     
     
@@ -62,15 +62,16 @@ class MachineAPI {
     }
     
     func addMachine(machine: Machine, image: UIImage?) async throws -> AddMachine {
-        guard let url = URL(string: "\(baseURL)/machines") else {
+        guard let url = URL(string: "\(baseURL)/machines?name=\(machine.name)&type=User&brand=\(machine.brand)") else {
             throw URLError(.badURL)
         }
-
+        let storedToken = UserDefaults.standard.string(forKey: "authToken") ?? ""
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         
         let boundary = UUID().uuidString
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(storedToken)", forHTTPHeaderField: "Authorization")
 
         var body = Data()
 

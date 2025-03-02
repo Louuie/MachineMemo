@@ -19,7 +19,8 @@ struct AddMachinePage: View {
     @State var navigateScreen: Bool = false
     @State var errorMessage: String = ""
     @State var machineID: Int = 0
-    @State var addMachineResponse: AddMachine = AddMachine(status: "", message: "", id: 0)
+    @State var machine_image: String = ""
+    @State var addMachineResponse: AddMachine = AddMachine(status: "", message: "", id: 0, image_url: nil)
 
     var body: some View {
         NavigationStack {
@@ -78,7 +79,8 @@ struct AddMachinePage: View {
                 }
             }
             .navigationDestination(isPresented: $navigateScreen) {
-                MachineDetailsView(machine: Machine(id: machineID, name: machineName, type: "User", brand: machineBrand))
+                // TODO: have it return the imageURL as well as the ID
+                MachineDetailsView(machine: Machine(id: machineID, name: machineName, type: "User", brand: machineBrand, image_url: machine_image))
             }
             .navigationTitle("Add Machine")
         }
@@ -89,10 +91,10 @@ struct AddMachinePage: View {
             isLoading = true
             errorMessage = ""
 
-            let newMachine = Machine(id: nil, name: name, type: "User", brand: brand)
+            let newMachine = Machine(id: nil, name: name, type: "User", brand: brand, image_url: nil)
             addMachineResponse = try await MachineAPI.shared.addMachine(machine: newMachine, image: image)
             machineID = addMachineResponse.id
-
+            machine_image = addMachineResponse.image_url ?? ""
             isLoading = false
         } catch {
             isLoading = false

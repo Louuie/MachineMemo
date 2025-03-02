@@ -16,5 +16,5 @@ struct MachineDetailsView: View {
 }
 
 #Preview {
-    MachineDetailsView(machine: Machine(id: 0, name: "Test", type: "User", brand: "Test"))
+    MachineDetailsView(machine: Machine(id: 0, name: "Test", type: "User", brand: "Test", image_url: ""))
 }

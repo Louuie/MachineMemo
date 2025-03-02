@@ -30,7 +30,7 @@ struct Update: Decodable, Identifiable {
 
 class MachineAPI {
     static let shared = MachineAPI()
-    private let baseURL = "http://192.168.1.31:5001"
+    private let baseURL = "https://machinememo.me"
     var session: URLSession
     
     
@@ -155,34 +155,6 @@ class MachineAPI {
             throw error
         }
     }
-
-    
-    
-    
-//    func loginWithGoogle() {
-//        // Your backend's Google OAuth endpoint
-//        let authURL = URL(string: "http://192.168.1.5:5001/google/login")!
-//        
-//        // Custom URL scheme for redirect (e.g., your-app://oauth-callback)
-//        let callbackScheme = "yourappscheme" // Match your app's URL scheme
-//        
-//        let session = ASWebAuthenticationSession(
-//            url: authURL,
-//            callbackURLScheme: callbackScheme
-//        ) { callbackURL, error in
-//            guard error == nil, let _ = callbackURL else {
-//                print("Login failed: \(error?.localizedDescription ?? "Unknown error")")
-//                return
-//            }
-//            
-//            // Login succeeded! Cookies are already in Safari's shared storage.
-//            NotificationCenter.default.post(name: .loginSuccess, object: nil)
-//        }
-//        
-//        // Required for iOS 13+
-//        //session.presentationContextProvider = self
-//        session.start()
-//    }
     
     func updateSetting(settingId: Int, updatedSettings: [String: String], machine_id: Int) async throws -> Setting {
         let url = URL(string: "\(baseURL)/edit?setting_id=\(settingId)")!

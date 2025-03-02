@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, redirect, session
 from flask_cors import CORS
-from middleware.auth import login_with_google, callback, logout, user, validate_token
+from middleware.auth import login_with_google, callback, logout, user, validate_token, refresh_token
 from middleware.db import get_machines, get_user_machines, get_user_settings, update_setting, add_machine_settings, add_machines
 from datetime import timedelta
 import os
@@ -104,7 +104,7 @@ def create_app():
         sess = session.get('user_session')
         print(f"Found user session: {sess}")
         return jsonify({"message": "Success", "session": sess}), 200
-    @app.route("/auth/validate", methods=["GET"])
+    @app.route("/auth/validate", methods=['GET'])
     @validate_token
     def auth_validate():
         """Validates token and returns user details"""
@@ -116,6 +116,10 @@ def create_app():
             "name": user.user_metadata.get("name"),
             "profile_picture": user.user_metadata.get("avatar_url"),
         })
+    @app.route("/auth/refresh", methods=['POST'])
+    @refresh_token
+    def refresh_new_token():
+        pass
 
     return app
 if __name__ == "__main__":

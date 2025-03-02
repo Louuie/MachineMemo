@@ -16,10 +16,12 @@ struct Machine: Identifiable, Codable {
     let name: String
     let type: String
     let brand: String
+    let image_url: String?
 }
 
 struct AddMachine: Codable {
     let status: String
     let message: String
     let id: Int
+    let image_url: String?
 }

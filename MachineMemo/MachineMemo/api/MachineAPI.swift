@@ -30,10 +30,9 @@ struct Update: Decodable, Identifiable {
 
 class MachineAPI {
     static let shared = MachineAPI()
-    private let baseURL = "https://machinememo-5791cb7039d5.herokuapp.com"
+    private let baseURL = "https://machinememo.me"
     var session: URLSession
     
-    @AppStorage("authToken") private var authToken: String?
     
     init() {
         let config = URLSessionConfiguration.default
@@ -62,42 +61,59 @@ class MachineAPI {
         return response.data
     }
     
-    func addMachine(machine: Machine) async throws -> AddMachine {
+    func addMachine(machine: Machine, image: UIImage?) async throws -> AddMachine {
         guard let url = URL(string: "\(baseURL)/machines?name=\(machine.name)&type=User&brand=\(machine.brand)") else {
             throw URLError(.badURL)
         }
-        
-        // Encode the JSON Data
-        let jsonData = try JSONEncoder().encode(machine)
-        
-        // Create the POST HTTP Request
+        let storedToken = UserDefaults.standard.string(forKey: "authToken") ?? ""
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(authToken ?? "")", forHTTPHeaderField: "Authorization")
-        request.httpBody = jsonData
         
-        // Send the request and get the actual response
-        let (data, _) = try await session.data(for: request)
+        let boundary = UUID().uuidString
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(storedToken)", forHTTPHeaderField: "Authorization")
+
+        var body = Data()
+
+        // Add name field
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"name\"\r\n\r\n".data(using: .utf8)!)
+        body.append("\(machine.name)\r\n".data(using: .utf8)!)
+
+        // Add brand field
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"brand\"\r\n\r\n".data(using: .utf8)!)
+        body.append("\(machine.brand)\r\n".data(using: .utf8)!)
+
+        // Add image if available
+        if let image = image, let imageData = image.jpegData(compressionQuality: 0.8) {
+            let filename = "machine_\(UUID().uuidString).jpg"
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"image\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
+            body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+            body.append(imageData)
+            body.append("\r\n".data(using: .utf8)!)
+        }
+
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
         
-        // Print it
-        print(String(data: data, encoding: .utf8) ?? "Invalid Data")
-        
-        // Decode the response and return it
-        let response = try JSONDecoder().decode(AddMachine.self, from: data)
-        return response
+        request.httpBody = body
+
+        let (data, _) = try await URLSession.shared.data(for: request)
+        return try JSONDecoder().decode(AddMachine.self, from: data)
     }
+
     
     func addSetting(setting: Setting) async throws -> AddSetting {
         guard let url = URL(string: "\(baseURL)/settings?machine_id=\(setting.machine_id)") else {
             throw URLError(.badURL)
         }
-        
+        let storedToken = UserDefaults.standard.string(forKey: "authToken") ?? ""
         let jsonData = try JSONEncoder().encode(setting)
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(authToken ?? "")", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(storedToken)", forHTTPHeaderField: "Authorization")
         request.httpBody = jsonData
         
         let (data, _) = try await session.data(for: request)
@@ -110,7 +126,7 @@ class MachineAPI {
             throw URLError(.badURL)
         }
 
-        // 🔹 Retrieve Token from UserDefaults (like `getUserMachines()`)
+        // Retrieve Token from UserDefaults (like `getUserMachines()`)
         let storedToken = UserDefaults.standard.string(forKey: "authToken") ?? ""
         print("Stored Auth Token Before Request:", storedToken)
 
@@ -138,34 +154,6 @@ class MachineAPI {
             print("Decoding Error:", error.localizedDescription)
             throw error
         }
-    }
-
-    
-    
-    
-    func loginWithGoogle() {
-        // Your backend's Google OAuth endpoint
-        let authURL = URL(string: "http://192.168.1.5:5001/google/login")!
-        
-        // Custom URL scheme for redirect (e.g., your-app://oauth-callback)
-        let callbackScheme = "yourappscheme" // Match your app's URL scheme
-        
-        let session = ASWebAuthenticationSession(
-            url: authURL,
-            callbackURLScheme: callbackScheme
-        ) { callbackURL, error in
-            guard error == nil, let _ = callbackURL else {
-                print("Login failed: \(error?.localizedDescription ?? "Unknown error")")
-                return
-            }
-            
-            // Login succeeded! Cookies are already in Safari's shared storage.
-            NotificationCenter.default.post(name: .loginSuccess, object: nil)
-        }
-        
-        // Required for iOS 13+
-        //session.presentationContextProvider = self
-        session.start()
     }
     
     func updateSetting(settingId: Int, updatedSettings: [String: String], machine_id: Int) async throws -> Setting {
@@ -223,20 +211,18 @@ class MachineAPI {
         guard let url = URL(string: "\(baseURL)/user") else {
             throw URLError(.badURL)
         }
-        print("Making sure we got the token in the machineAPI \(authToken ?? "")")
+        let storedToken = UserDefaults.standard.string(forKey: "authToken") ?? ""
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue("include", forHTTPHeaderField: "credentials")  // Ensure cookies are included
-        request.setValue("Bearer \(authToken ?? "")", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(storedToken)", forHTTPHeaderField: "Authorization")
         
         // Use the shared session
         let (data, response) = try await session.data(for: request)
         
         // Debug: Print Raw JSON
         print("Raw Response:", String(data: data, encoding: .utf8) ?? "Invalid Data")
-        let storedToken = UserDefaults.standard.string(forKey: "authToken")
-        print("Using Auth Token:", storedToken ?? "None")
         
         
         // Decode JSON response
@@ -260,7 +246,7 @@ class MachineAPI {
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         //request.setValue("include", forHTTPHeaderField: "credentials")  // Ensure cookies are included
-        request.setValue("Bearer \(authToken ?? "")", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(storedToken)", forHTTPHeaderField: "Authorization")
         let (data, _) = try await session.data(for: request)
         
         // Debugging: Print raw JSON data
@@ -320,19 +306,26 @@ class MachineAPI {
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
-        let (_, response) = try await session.data(for: request)
+        let (data, response) = try await session.data(for: request)
 
         if let httpResponse = response as? HTTPURLResponse {
+            print("🔹 HTTP Status Code: \(httpResponse.statusCode)")
+            print("🔹 Response Headers: \(httpResponse.allHeaderFields)")
+
+            let responseString = String(data: data, encoding: .utf8) ?? "❌ Could not decode response"
+            print("🔹 Raw Response Body: \(responseString)")
+
             if httpResponse.statusCode == 200 {
                 return true
             } else if httpResponse.statusCode == 401 {
-                print("Token expired")
+                print("❌ Token expired")
                 return false
             }
         }
 
         throw URLError(.cannotDecodeContentData)
     }
+
 
 }
 

@@ -14,17 +14,11 @@ struct Tabs: View {
     @State private var buildNumber: String = ""
     var body: some View {
         TabView {
-            Tab("Home", systemImage: "house") {
-                HomePage()
+            Tab("Workouts", systemImage: "figure.strengthtraining.traditional") {
+                WorkoutsPage()
             }
-            Tab("Machines", systemImage: "figure.strengthtraining.traditional") {
-                MachinePage()
-            }
-            Tab("Your Machines", systemImage: "list.star") {
+            Tab("Machines", systemImage: "dumbbell") {
                 YourMachinesPage()
-            }
-            Tab("Calculator", systemImage: "dumbbell") {
-                BarbellCalculatorView()
             }
             Tab("Profile", systemImage: "person") {
                 ProfilePage(profile: profile, appVersion: appVersion, buildNumber: buildNumber)

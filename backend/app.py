@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, redirect, session
 from flask_cors import CORS
 from middleware.auth import login_with_google, callback, logout, user, validate_token, refresh_token
-from middleware.db import get_machines, get_user_machines, get_user_settings, update_setting, add_machine_settings, add_machines
+from middleware.db import get_machines, get_user_machines, get_user_settings, update_setting, add_machine_settings, add_machines, add_workout
 from datetime import timedelta
 import os
 def create_app():
@@ -120,6 +120,11 @@ def create_app():
     @refresh_token
     def refresh_new_token():
         pass
+    @app.route("/workouts", methods=['POST'], endpoint='workouts-add-endpoint')
+    @add_workout
+    def create_workout():
+        middleware_data = request.middleware_data
+        return jsonify(middleware_data), 200 if middleware_data["status"] == "success" else 500
 
     return app
 if __name__ == "__main__":

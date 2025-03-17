@@ -295,7 +295,7 @@ def add_machines(func):
         except Exception as e:
             request.middleware_data = {"status": "error", "message": str(e)}
 
-        print("🔹 Exiting add_machines middleware")
+        print("Exiting add_machines middleware")
         return func(*args, **kwargs)
 
     return wrapper
@@ -370,4 +370,49 @@ def get_user_machines(func):
             request.middleware_data = {"status": "error", "message": str(e)}
 
         return func(*args, **kwargs)
+    return wrapper
+def add_workout(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        # Extract Authorization Token
+        auth_header = request.headers.get('Authorization')
+
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return jsonify({'status': 'error', 'message': 'No token provided'}), 401
+        
+        token = auth_header.split(' ')[1]
+
+        # Extract form data
+        name = request.args.get("name")
+
+
+        # Get user ID from Supabase session
+        try:
+            user_response = supabase.auth.get_user(token)
+
+            if not user_response or not user_response.user:
+                return jsonify({"status": "error", "message": "User authentication failed"}), 401
+            
+            user_id = user_response.user.id
+
+            # Insert into Supabase database
+            data = supabase.table("workouts").insert({
+                "name": name,
+                "user_id": user_id,
+            }).execute()
+
+
+            request.middleware_data = {
+                "status": "success",
+                "message": "workout added successfully",
+                "id": data.data[0]["id"],
+                "workout_name": name
+            }
+
+        except Exception as e:
+            request.middleware_data = {"status": "error", "message": str(e)}
+
+        print("Exiting add_workouts middleware")
+        return func(*args, **kwargs)
+
     return wrapper

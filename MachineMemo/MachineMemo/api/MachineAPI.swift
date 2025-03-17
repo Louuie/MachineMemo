@@ -30,7 +30,7 @@ struct Update: Decodable, Identifiable {
 
 class MachineAPI {
     static let shared = MachineAPI()
-    private let baseURL = "https://machinememo.me"
+    private let baseURL = "http://192.168.1.29:5001"
     var session: URLSession
     
     
